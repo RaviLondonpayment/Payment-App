@@ -17,16 +17,20 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   ownerName: {
     type: String,
+    required: true,
   },
   shopAddress: {
     type: String,
+    required: true,
   },
   country: {
     type: String,
+  },
+  subscribed: {
+    type: Boolean,
   },
 });
 
@@ -38,4 +42,5 @@ userSchema.pre("save", async function (next) {
   this.password = hash;
   next();
 });
+
 export default mongoose.model("user", userSchema);

@@ -18,6 +18,10 @@ app.get((req, res) => {
   res.send("We are at home");
 });
 app.use("/api/", IndexRoute);
+app.use((error, req, res, next) => {
+  console.log(error);
+  res.status(500).json({ error: error.message });
+});
 app.listen(5000, () => {
   console.log("Server Running on port 5000");
 });

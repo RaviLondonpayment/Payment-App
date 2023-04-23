@@ -3,9 +3,21 @@
 // const fs = require("fs");
 // const path = require("path");
 import nodemailer from "nodemailer";
+import HandleBars from "handlebars";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 export const sendEmail = async (email, subject, payload, template) => {
   try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    // console.log(
+    //   "username & pwd",
+    //   process.env.EMAIL_USERNAME,
+    //   process.env.EMAIL_PASSWORD
+    // );
     // create reusable transporter object using the default SMTP transport
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -17,7 +29,7 @@ export const sendEmail = async (email, subject, payload, template) => {
     });
 
     const source = fs.readFileSync(path.join(__dirname, template), "utf8");
-    const compiledTemplate = handlebars.compile(source);
+    const compiledTemplate = HandleBars.compile(source);
     const options = () => {
       return {
         from: process.env.FROM_EMAIL,
@@ -29,9 +41,11 @@ export const sendEmail = async (email, subject, payload, template) => {
 
     // Send email
     transporter.sendMail(options(), (error, info) => {
+      // console.log("mailfn triggered", info, error);
       if (error) {
         return error;
       } else {
+        // console.log("success");
         return res.status(200).json({
           success: true,
         });

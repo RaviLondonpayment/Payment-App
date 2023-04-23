@@ -3,17 +3,19 @@ import {
   signUpController,
   loginController,
   resetController,
-  forgetController,
+  resetPasswordRequestController,
+  //   forgetController,
 } from "../controller/index.controllers.js";
 
 const router = express.Router();
 
 router.post("/auth/signup", signUpController);
 
-router.get("/auth/login", loginController);
+router.post("/auth/login", loginController);
 
 router.post("/auth/resetpassword", resetController);
 
-router.get("/auth/forgetpassword", forgetController);
+router.post("/auth/resetpasswordrequest", resetPasswordRequestController);
+// router.get("/auth/forgetpassword", forgetController);
 
 export { router };
