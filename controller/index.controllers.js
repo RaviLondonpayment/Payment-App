@@ -3,6 +3,7 @@ import {
   login,
   requestPasswordReset,
   resetPassword,
+  logout,
 } from "../services/index.services.js";
 
 export const signUpController = async (req, res, next) => {
@@ -13,6 +14,7 @@ export const signUpController = async (req, res, next) => {
 };
 
 export const loginController = async (req, res, next) => {
+  // console.log(req.body);
   const loginService = await login(req.body);
   return res.json(loginService);
 };
@@ -37,4 +39,9 @@ export const resetPasswordRequestController = async (req, res, next) => {
     req.body.email
   );
   return res.json(resetPasswordRequestService);
+};
+
+export const logoutController = async (req, res, next) => {
+  const logoutService = await logout(req.body);
+  return res.json(logoutService);
 };

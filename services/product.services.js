@@ -19,6 +19,19 @@ export const getAllProduct = async () => {
   };
 };
 
+//get product by customer
+export const getProductByCustomer = async ({ id }) => {
+  const products = await productModel.find({ user: id });
+
+  if (products) {
+    return {
+      success: true,
+      status: 200,
+      data: products,
+    };
+  }
+};
+
 //get product by id
 export const getProductById = async (id) => {
   const products = await productModel.findById({ _id: id });

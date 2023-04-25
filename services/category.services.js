@@ -31,7 +31,7 @@ export const getAllCategories = async () => {
 };
 
 //get category by id
-export const getCategoryById = async (id) => {
+export const getCategoryById = async ({ id }) => {
   const category = categoryModel.findById({ _id: id });
   if (category) {
     return {
@@ -43,8 +43,50 @@ export const getCategoryById = async (id) => {
 };
 
 //update category
-export const 
+export const updateCategory = async ({
+  id,
+  image,
+  categoryName,
+  categoryDescription,
+  colorCode,
+  user,
+}) => {
+  const category = await categoryModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      image: image,
+      categoryName: categoryName,
+      categoryDescription: categoryDescription,
+      colorCode: colorCode,
+      user: user,
+    }
+  );
+  if (category) {
+    return {
+      success: true,
+      status: 200,
+      message: "Category updated successfully",
+    };
+  }
+};
 
+//get category by customer
+export const getCategoryByCustomer = async ({ id }) => {
+  const category = await categoryModel.find({ user: id });
+  if (category) {
+    return {
+      success: true,
+      status: 200,
+      data: category,
+    };
+  } else {
+    return {
+      success: false,
+      status: 404,
+      message: "not found",
+    };
+  }
+};
 //delete category
 // export const deleteCategory = async (id) => {
 //   const category = await categoryModel.deleteOne({ _id: id });

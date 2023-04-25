@@ -20,6 +20,9 @@ const categorySchema = new Schema({
   colorCode: {
     type: String,
   },
+  user: {
+    type: Schema.Types.ObjectId,
+  },
 });
 
 export default mongoose.model("user", categorySchema);

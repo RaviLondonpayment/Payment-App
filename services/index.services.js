@@ -21,7 +21,9 @@ export const signup = async (payload) => {
   }
   user = new userModel(payload);
 
-  const token = sign({ id: user._id }, process.env.JWT_SECRET);
+  // const token = sign({ id: user._id }, process.env.JWT_SECRET);
+  let resetToken = crypto.randomBytes(32).toString("hex");
+  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
   await new tokenModel({
     userId: user._id,
     token: hash,
@@ -30,7 +32,7 @@ export const signup = async (payload) => {
 
   //   let resetToken = crypto.randomBytes(32).toString("hex");
   //   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-  const link = `${process.env.CLIENT_URL}/passwordReset?token=${token}&id=${user._id}`;
+  const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
 
   console.log(user);
   await user.save();
@@ -50,15 +52,66 @@ export const signup = async (payload) => {
     ownerName: user.ownerName,
     shopAddress: user.shopAddress,
     country: user.country,
-    token: token,
+    token: resetToken,
   };
 };
 
 //login
-export const login = (payload) => {
-  let token = sign();
-  let user = userModel.findByIdAndUpdate({ email: payload.email });
+export const login = async ({ email, password }) => {
+  // let token = sign();
+  let user = await userModel.findOne({ email: email });
+  // console.log("User name", user);
+
   if (user) {
+    let passwordCheck = bcrypt.compare(password, user.password);
+    if (passwordCheck) {
+      let resetToken = crypto.randomBytes(32).toString("hex");
+      const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+      const data = await tokenModel.create({
+        userId: user._id,
+        token: hash,
+        createdAt: Date.now(),
+      });
+      console.log("token", data);
+      return {
+        success: true,
+        userId: user._id,
+        message: `welcome ${user.ownerName}`,
+        token: resetToken,
+      };
+    } else {
+      return {
+        success: false,
+        status: 401,
+        message: "Invalid Password",
+      };
+    }
+  } else {
+    return {
+      success: false,
+      status: 401,
+      message: "Username doesn't exist",
+    };
+  }
+};
+
+//logout
+export const logout = async ({ id }) => {
+  const data = await tokenModel.findOneAndDelete({
+    userId: id,
+  });
+  if (data) {
+    return {
+      success: true,
+      status: 200,
+      message: "Logout successfully",
+    };
+  } else {
+    return {
+      success: false,
+      status: 400,
+      message: "Not found",
+    };
   }
 };
 
@@ -100,19 +153,21 @@ export const resetPassword = async (userId, token, password) => {
   let passwordResetToken = await tokenModel.findOne({ userId });
 
   if (!passwordResetToken) {
-    //throw new Error("Invalid or expired password reset token");
     return {
       success: false,
       message: "Invalid or expired password reset token",
     };
   }
 
-  console.log(passwordResetToken.token, token);
-
   const isValid = await bcrypt.compare(token, passwordResetToken.token);
-
+  // console.log(isValid, "output");
   if (!isValid) {
-    throw new Error("Invalid or expired password reset token");
+    // throw new Error("Invalid or expired password reset token");
+    return {
+      success: false,
+      status: 404,
+      message: "Invalid or expired password reset token",
+    };
   }
 
   const hash = await bcrypt.hash(password, Number(bcryptSalt));

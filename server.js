@@ -22,6 +22,9 @@ app.use((error, req, res, next) => {
   console.log(error);
   res.status(500).json({ error: error.message });
 });
+app.get("/", (req, res) => {
+  res.send("We are on home");
+});
 app.listen(5000, () => {
   console.log("Server Running on port 5000");
 });
