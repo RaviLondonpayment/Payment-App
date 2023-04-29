@@ -87,6 +87,7 @@ export const getCategoryByCustomer = async ({ id }) => {
     };
   }
 };
+
 //delete category
 // export const deleteCategory = async (id) => {
 //   const category = await categoryModel.deleteOne({ _id: id });

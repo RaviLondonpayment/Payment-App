@@ -4,6 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { router as IndexRoute } from "./routes/index.routes.js";
+import { router as CategoryRoute } from "./routes/category.routes.js";
+import { router as ProductRoute } from "./routes/product.routes.js";
 
 dotenv.config();
 const app = express();
@@ -17,7 +19,9 @@ app.use(cors());
 app.get((req, res) => {
   res.send("We are at home");
 });
-app.use("/api/", IndexRoute);
+app.use("/api/auth", IndexRoute);
+app.use("/api/category", CategoryRoute);
+app.use("/api/product", ProductRoute);
 app.use((error, req, res, next) => {
   console.log(error);
   res.status(500).json({ error: error.message });

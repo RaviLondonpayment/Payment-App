@@ -2,7 +2,7 @@ import {
   createCategory,
   getCategoryByCustomer,
   getCategoryById,
-} from "../services/category.services";
+} from "../services/category.services.js";
 
 export const createCategoryController = async (req, res, next) => {
   const createCategoryService = await createCategory(req);
@@ -17,4 +17,9 @@ export const getCategoryByCustomerController = async (req, res, next) => {
 export const getCategoryByIdController = async (req, res) => {
   const getCategoryByIdService = await getCategoryById(req);
   return res.json(getCategoryByIdService);
+};
+
+export const updateCategoryByIdController = async (req, res) => {
+  const updateCategoryByIdService = await updateCategoryById(req);
+  return res.json(updateCategoryByIdService);
 };

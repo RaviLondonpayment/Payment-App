@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({
   image: {
-    type: Image,
+    type: Buffer,
   },
   categoryName: {
     type: String,
@@ -25,4 +25,4 @@ const categorySchema = new Schema({
   },
 });
 
-export default mongoose.model("user", categorySchema);
+export default mongoose.model("category", categorySchema);

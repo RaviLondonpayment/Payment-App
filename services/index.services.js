@@ -11,6 +11,7 @@ const bcryptSalt = process.env.BCRYPT_SALT;
 
 //signup
 export const signup = async (payload) => {
+  //console.log(payload, process.env.PASSWORD_KEY);
   let user = await userModel.findOne({ email: payload.email });
   if (user) {
     return {
@@ -20,7 +21,8 @@ export const signup = async (payload) => {
     };
   }
   user = new userModel(payload);
-
+  const passwordGenerator =
+    "@" + Math.floor(Math.random() * process.env.PASSWORD_KEY) + "lpa";
   // const token = sign({ id: user._id }, process.env.JWT_SECRET);
   let resetToken = crypto.randomBytes(32).toString("hex");
   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
@@ -34,14 +36,22 @@ export const signup = async (payload) => {
   //   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
   const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
 
-  console.log(user);
-  await user.save();
+  //console.log(user);
+  await user.save({
+    // email: payload.email,
+    // name: payload.name,
+    password: passwordGenerator,
+    // ownerName: payload.ownerName,
+    // shopAddress: payload.shopAddress,
+    // country: payload.country,
+  });
   sendEmail(
     user.email,
     "Set password",
     {
       name: user.name,
       link: link,
+      password: passwordGenerator,
     },
     "./template/setPassword.handlebars"
   );
@@ -53,6 +63,7 @@ export const signup = async (payload) => {
     shopAddress: user.shopAddress,
     country: user.country,
     token: resetToken,
+    password: passwordGenerator,
   };
 };
 
@@ -60,7 +71,7 @@ export const signup = async (payload) => {
 export const login = async ({ email, password }) => {
   // let token = sign();
   let user = await userModel.findOne({ email: email });
-  // console.log("User name", user);
+  // //console.log("User name", user);
 
   if (user) {
     let passwordCheck = bcrypt.compare(password, user.password);
@@ -72,7 +83,7 @@ export const login = async ({ email, password }) => {
         token: hash,
         createdAt: Date.now(),
       });
-      console.log("token", data);
+      //console.log("token", data);
       return {
         success: true,
         userId: user._id,
@@ -143,13 +154,13 @@ export const requestPasswordReset = async (email) => {
     },
     "./template/requestResetPassword.handlebars"
   );
-  console.log("mail", response);
+  //console.log("mail", response);
   return { link };
 };
 
 //resetpassword
 export const resetPassword = async (userId, token, password) => {
-  console.log(userId);
+  //console.log(userId);
   let passwordResetToken = await tokenModel.findOne({ userId });
 
   if (!passwordResetToken) {
@@ -160,7 +171,7 @@ export const resetPassword = async (userId, token, password) => {
   }
 
   const isValid = await bcrypt.compare(token, passwordResetToken.token);
-  // console.log(isValid, "output");
+  // //console.log(isValid, "output");
   if (!isValid) {
     // throw new Error("Invalid or expired password reset token");
     return {

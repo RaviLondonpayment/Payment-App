@@ -11,15 +11,15 @@ import {
 const router = express.Router();
 
 //Authentication
-router.post("/auth/signup", signUpController);
+router.post("/signup", signUpController);
 
-router.post("/auth/login", loginController);
+router.post("/login", loginController);
 
-router.post("/auth/resetpassword", resetController);
+router.post("/resetpassword", resetController);
 
-router.post("/auth/resetpasswordrequest", resetPasswordRequestController);
+router.post("/resetpasswordrequest", resetPasswordRequestController);
 
-router.post("/auth/logout", logoutController);
+router.post("/logout", logoutController);
 
 // router.get("/product/getproductbyid")
 // router.get("/auth/forgetpassword", forgetController);

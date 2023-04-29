@@ -10,6 +10,9 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
+  image: {
+    type: Buffer,
+  },
   category: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -35,6 +38,9 @@ const productSchema = new Schema({
   description: {
     type: String,
   },
+  offer: {
+    type: String,
+  },
 });
 
-export default mongoose.model("user", productSchema);
+export default mongoose.model("product", productSchema);
