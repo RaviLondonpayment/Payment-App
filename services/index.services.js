@@ -20,37 +20,46 @@ export const signup = async (payload) => {
       message: "username already taken",
     };
   }
-  user = new userModel(payload);
   const passwordGenerator =
     "@" + Math.floor(Math.random() * process.env.PASSWORD_KEY) + "lpa";
+  user = new userModel({
+    email: payload.email,
+    name: payload.name,
+    password: passwordGenerator,
+    ownerName: payload.ownerName,
+    shopAddress: payload.shopAddress,
+    country: payload.country,
+  });
+
   // const token = sign({ id: user._id }, process.env.JWT_SECRET);
-  let resetToken = crypto.randomBytes(32).toString("hex");
-  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-  await new tokenModel({
-    userId: user._id,
-    token: hash,
-    createdAt: Date.now(),
-  }).save();
+  // let resetToken = crypto.randomBytes(32).toString("hex");
+  // const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+  // await new tokenModel({
+  //   userId: user._id,
+  //   token: hash,
+  //   createdAt: Date.now(),
+  // }).save();
 
   //   let resetToken = crypto.randomBytes(32).toString("hex");
   //   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-  const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
+  //const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
 
   //console.log(user);
-  await user.save({
-    // email: payload.email,
-    // name: payload.name,
-    password: passwordGenerator,
-    // ownerName: payload.ownerName,
-    // shopAddress: payload.shopAddress,
-    // country: payload.country,
-  });
+  //await user.save({
+  // email: payload.email,
+  // name: payload.name,
+  //password: passwordGenerator,
+  // ownerName: payload.ownerName,
+  // shopAddress: payload.shopAddress,
+  // country: payload.country,
+  //});
+  user.save();
   sendEmail(
     user.email,
     "Set password",
     {
       name: user.name,
-      link: link,
+      //link: link,
       password: passwordGenerator,
     },
     "./template/setPassword.handlebars"
@@ -62,8 +71,7 @@ export const signup = async (payload) => {
     ownerName: user.ownerName,
     shopAddress: user.shopAddress,
     country: user.country,
-    token: resetToken,
-    password: passwordGenerator,
+    // password: passwordGenerator,
   };
 };
 
@@ -75,6 +83,7 @@ export const login = async ({ email, password }) => {
 
   if (user) {
     let passwordCheck = bcrypt.compare(password, user.password);
+
     if (passwordCheck) {
       let resetToken = crypto.randomBytes(32).toString("hex");
       const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));

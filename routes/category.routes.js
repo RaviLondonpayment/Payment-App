@@ -5,16 +5,17 @@ import {
   getCategoryByIdController,
   updateCategoryByIdController,
 } from "../controller/category.controllers.js";
+import { verifyUser } from "../verification/verification.js";
 
 const router = express.Router();
 
-router.post("/create", createCategoryController);
+router.post("/create", verifyUser, createCategoryController);
 
-router.get("/update", updateCategoryByIdController);
+router.get("/update", verifyUser, updateCategoryByIdController);
 
-router.post("/getbyid", getCategoryByIdController);
+router.post("/getbyid", verifyUser, getCategoryByIdController);
 
-router.post("/getbycustomerid", getCategoryByCustomerController);
+router.get("/getbycustomerid", verifyUser, getCategoryByCustomerController);
 
 // router.get("/update")
 

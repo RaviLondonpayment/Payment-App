@@ -6,6 +6,9 @@ import dotenv from "dotenv";
 import { router as IndexRoute } from "./routes/index.routes.js";
 import { router as CategoryRoute } from "./routes/category.routes.js";
 import { router as ProductRoute } from "./routes/product.routes.js";
+import tokenModel from "./models/token.model.js";
+import bcrypt from "bcrypt";
+const bcryptSalt = process.env.BCRYPT_SALT;
 
 dotenv.config();
 const app = express();

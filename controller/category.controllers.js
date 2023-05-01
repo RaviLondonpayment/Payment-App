@@ -4,13 +4,15 @@ import {
   getCategoryById,
 } from "../services/category.services.js";
 
-export const createCategoryController = async (req, res, next) => {
-  const createCategoryService = await createCategory(req);
+export const createCategoryController = async (req, res) => {
+  const createCategoryService = await createCategory(req.body, res);
   return res.json(createCategoryService);
 };
 
-export const getCategoryByCustomerController = async (req, res, next) => {
-  const getCategorBycustomerService = await getCategoryByCustomer(req);
+export const getCategoryByCustomerController = async (req, res) => {
+  const getCategorBycustomerService = await getCategoryByCustomer(
+    res.locals.user
+  );
   return res.json(getCategorBycustomerService);
 };
 

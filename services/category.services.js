@@ -1,21 +1,32 @@
 import categoryModel from "../models/category.model.js";
-
+// import mongoose from "mongoose";
 //create category
-export const createCategory = async ({
-  image,
-  categoryName,
-  categoryDescription,
-  colorCode,
-}) => {
-  const category = new categoryModel();
-  await category.save({
-    image: image,
+export const createCategory = async (
+  { image, categoryName, categoryDescription, colorCode, user },
+  res
+) => {
+  // let id = new mongoose.Types.ObjectId(user);
+  // console.log("lol", categoryName, categoryDescription, colorCode, user);
+  const category = new categoryModel({
+    // image: image ? image : "",
     categoryName: categoryName,
     categoryDescription: categoryDescription,
     colorCode: colorCode,
+    user: res.locals.user,
   });
-
-  return { success: true, message: "Category created succesfully" };
+  let error = "";
+  await category.save().catch((err) => {
+    error = {
+      status: 400,
+      success: false,
+      message: err,
+    };
+  });
+  if (error) {
+    return error;
+  } else {
+    return { success: true, message: "Category created succesfully" };
+  }
 };
 
 //getall categories
@@ -71,7 +82,7 @@ export const updateCategory = async ({
 };
 
 //get category by customer
-export const getCategoryByCustomer = async ({ id }) => {
+export const getCategoryByCustomer = async (id) => {
   const category = await categoryModel.find({ user: id });
   if (category) {
     return {
