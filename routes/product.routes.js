@@ -8,21 +8,22 @@ import {
   getProductByIdController,
   updateProductController,
 } from "../controller/product.controllers.js";
+import { verifyUser } from "../verification/verification.js";
 
 const router = express.Router();
 
-router.post("/create", createProductController);
+router.post("/create", verifyUser, createProductController);
 
-router.get("/update", updateProductController);
+router.post("/update", verifyUser, updateProductController);
 
-router.get("/getbyid", getProductByIdController);
+router.post("/getbyid", verifyUser, getProductByIdController);
 
-router.get("/getbycategoryid", getProductByCategoryController);
+router.post("/getbycategory", verifyUser, getProductByCategoryController);
 
-router.get("/getproductbycustomer", getProductByCustomerController);
+router.post("/getbycustomer", verifyUser, getProductByCustomerController);
 
-router.get("/getbydate", getProductByDateController);
+router.post("/getbydate", verifyUser, getProductByDateController);
 
-router.delete("/delete", deleteProductController);
+router.delete("/delete", verifyUser, deleteProductController);
 
 export { router };

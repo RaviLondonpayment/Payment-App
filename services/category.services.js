@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import categoryModel from "../models/category.model.js";
 // import mongoose from "mongoose";
 //create category
@@ -8,7 +9,7 @@ export const createCategory = async (
   // let id = new mongoose.Types.ObjectId(user);
   // console.log("lol", categoryName, categoryDescription, colorCode, user);
   const category = new categoryModel({
-    // image: image ? image : "",
+    image: image ? image : "",
     categoryName: categoryName,
     categoryDescription: categoryDescription,
     colorCode: colorCode,
@@ -43,9 +44,12 @@ export const getAllCategories = async () => {
 
 //get category by id
 export const getCategoryById = async ({ id }) => {
-  const category = categoryModel.findById({ _id: id });
+  let objId = mongoose.Types.ObjectId(id);
+  const category =await categoryModel.findById({ _id: objId });
   if (category) {
     return {
+      success: true,
+      status: 200,
       data: category,
     };
   } else {
@@ -62,14 +66,15 @@ export const updateCategory = async ({
   colorCode,
   user,
 }) => {
+  let objId = mongoose.Types.ObjectId(id);
+  // console.log(objId, "lol", id, categoryName, categoryDescription, colorCode);
   const category = await categoryModel.findByIdAndUpdate(
-    { _id: id },
+    { _id: objId },
     {
       image: image,
       categoryName: categoryName,
       categoryDescription: categoryDescription,
       colorCode: colorCode,
-      user: user,
     }
   );
   if (category) {
@@ -77,6 +82,12 @@ export const updateCategory = async ({
       success: true,
       status: 200,
       message: "Category updated successfully",
+    };
+  } else {
+    return {
+      success: false,
+      status: 404,
+      message: "failed. Not found",
     };
   }
 };

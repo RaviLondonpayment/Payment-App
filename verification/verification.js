@@ -7,10 +7,11 @@ export const verifyUser = async (req, res, next) => {
   //   const hash = await bcrypt.hash(req.body.token, Number(bcryptSalt));
   //   console.log(hash);
   const id = mongoose.Types.ObjectId(req.body.user);
-  console.log(id);
+  //   console.log(id);
   const user = await tokenModel.findOne({ userId: id });
   //   console.log(eligible, "data");
   if (user) {
+    // console.log(req.body, "verify");
     const eligible = await bcrypt.compare(req.body.token, user.token);
     if (eligible) {
       res.locals.user = id;
@@ -26,7 +27,7 @@ export const verifyUser = async (req, res, next) => {
     res.json({
       success: false,
       status: 401,
-      message: "Unauthorized",
+      message: "User doesnt exist",
     });
   }
 };

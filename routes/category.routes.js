@@ -11,11 +11,11 @@ const router = express.Router();
 
 router.post("/create", verifyUser, createCategoryController);
 
-router.get("/update", verifyUser, updateCategoryByIdController);
+router.post("/update", verifyUser, updateCategoryByIdController);
 
 router.post("/getbyid", verifyUser, getCategoryByIdController);
 
-router.get("/getbycustomerid", verifyUser, getCategoryByCustomerController);
+router.post("/getbycustomerid", verifyUser, getCategoryByCustomerController);
 
 // router.get("/update")
 

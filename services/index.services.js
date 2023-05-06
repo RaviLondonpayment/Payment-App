@@ -4,6 +4,7 @@ import tokenModel from "../models/token.model.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../utils/sendEmail.js";
+import mongoose from "mongoose";
 
 const { sign, verify } = jwt;
 const JWTsecret = process.env.JWT_SECRET;
@@ -65,6 +66,8 @@ export const signup = async (payload) => {
     "./template/setPassword.handlebars"
   );
   return {
+    success: true,
+    status: 200,
     userId: user._id,
     email: user.email,
     name: user.name,
@@ -117,8 +120,9 @@ export const login = async ({ email, password }) => {
 
 //logout
 export const logout = async ({ id }) => {
+  let userid = mongoose.Types.ObjectId(id);
   const data = await tokenModel.findOneAndDelete({
-    userId: id,
+    userId: userid,
   });
   if (data) {
     return {
