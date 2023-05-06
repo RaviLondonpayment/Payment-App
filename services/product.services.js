@@ -133,29 +133,35 @@ export const updateProduct = async ({
   expiryDate,
   description,
 }) => {
+  console.log("triggered");
   let productid = mongoose.Types.ObjectId(id);
   let categoryid = mongoose.Types.ObjectId(category);
   let userid = mongoose.Types.ObjectId(user);
-  const products = await productModel.findByIdAndUpdate(
-    { _id: productid },
-    {
-      productName: name,
-      categoryid: categoryid,
-      quantity: quantity,
-      image: image,
-      manufacturingDate: manufacturingDate,
-      kilogram: kilogram,
-      price: price,
-      expiryDate: expiryDate,
-      user: userid,
-      description: description,
-    }
-  );
+  console.log("check", productid);
+  const products = await productModel
+    .findByIdAndUpdate(
+      { _id: productid },
+      {
+        productName: name,
+        categoryid: categoryid,
+        quantity: quantity,
+        image: image,
+        manufacturingDate: manufacturingDate,
+        kilogram: kilogram,
+        price: price,
+        expiryDate: expiryDate,
+        user: userid,
+        description: description,
+      }
+    )
+    .catch((err) => console.log(err, "lol"));
+  const all = await productModel.find({ user: userid });
   if (products) {
     return {
       success: true,
       status: 200,
       data: products,
+      allProduct: all,
     };
   } else {
     return {
@@ -186,8 +192,8 @@ export const deleteProduct = async ({ id }) => {
 };
 
 //getproductbydate
-export const getProductByDate = async ({ id, date }) => {
-  let productid = mongoose.Types.ObjectId(id);
+export const getProductByDate = async ({ user, date }) => {
+  let userid = mongoose.Types.ObjectId(user);
 
   const today = new Date().toLocaleDateString("en-GB", {
     day: "numeric",
@@ -198,7 +204,7 @@ export const getProductByDate = async ({ id, date }) => {
   console.log(date, "date");
 
   const products = await productModel.find({
-    id: productid,
+    user: userid,
     expiryDate: { $gte: today, $lt: date },
   });
   if (products) {

@@ -41,6 +41,9 @@ const productSchema = new Schema({
   offer: {
     type: String,
   },
+  QrCode: {
+    type: String,
+  },
 });
 
 export default mongoose.model("product", productSchema);
