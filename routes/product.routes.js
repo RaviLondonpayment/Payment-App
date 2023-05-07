@@ -6,6 +6,7 @@ import {
   getProductByCustomerController,
   getProductByDateController,
   getProductByIdController,
+  getProductByOfferPriceController,
   updateProductController,
 } from "../controller/product.controllers.js";
 import { verifyUser } from "../verification/verification.js";
@@ -23,6 +24,8 @@ router.post("/getbycategory", verifyUser, getProductByCategoryController);
 router.post("/getbycustomer", verifyUser, getProductByCustomerController);
 
 router.post("/getbydate", verifyUser, getProductByDateController);
+
+router.post("/getByOffer", verifyUser, getProductByOfferPriceController);
 
 router.delete("/delete", verifyUser, deleteProductController);
 

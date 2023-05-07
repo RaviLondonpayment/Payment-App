@@ -6,6 +6,7 @@ import {
   deleteProduct,
   getProductByDate,
   getProductByCategoryId,
+  getproductbyofferprice,
 } from "../services/product.services.js";
 
 export const createProductController = async (req, res, next) => {
@@ -41,4 +42,9 @@ export const getProductByDateController = async (req, res, next) => {
 export const getProductByCategoryController = async (req, res, next) => {
   const getProductByCategoryService = await getProductByCategoryId(req.body);
   return res.json(getProductByCategoryService);
+};
+
+export const getProductByOfferPriceController = async (req, res) => {
+  const getProductByOfferPriceService = await getproductbyofferprice(req.body);
+  return res.json(getProductByOfferPriceService);
 };

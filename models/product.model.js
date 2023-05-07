@@ -41,8 +41,11 @@ const productSchema = new Schema({
   offer: {
     type: String,
   },
-  QrCode: {
+  barCode: {
     type: String,
+  },
+  offerPrice: {
+    type: Number,
   },
 });
 

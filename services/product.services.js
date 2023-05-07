@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 import productModel from "../models/product.model.js";
 
+//calculation
+const calculation = (offer, price) => {
+  return price - (price * offer) / 100;
+};
+
 //create product
 export const createProduct = async ({
   user,
@@ -23,8 +28,8 @@ export const createProduct = async ({
     month: "numeric",
     year: "numeric",
   });
-
-  console.log(today, "date");
+  let offerValue = calculation(offer, price);
+  // console.log(today, "date");
   const product = new productModel({
     productName: productName,
     category: category,
@@ -37,6 +42,7 @@ export const createProduct = async ({
     user: userid,
     description: description,
     offer: offer,
+    offerPrice: offerValue,
   });
   await product.save();
   if (product) {
@@ -100,7 +106,7 @@ export const getProductById = async ({ id }) => {
 
 //get product by category
 export const getProductByCategoryId = async ({ category }) => {
-  console.log("category", category);
+  // console.log("category", category);
   let categoryid = mongoose.Types.ObjectId(category);
   const products = await productModel.find({ category: categoryid });
 
@@ -137,6 +143,8 @@ export const updateProduct = async ({
   let productid = mongoose.Types.ObjectId(id);
   let categoryid = mongoose.Types.ObjectId(category);
   let userid = mongoose.Types.ObjectId(user);
+  let offerValue = calculation(offer, price);
+
   console.log("check", productid);
   const products = await productModel
     .findByIdAndUpdate(
@@ -152,6 +160,7 @@ export const updateProduct = async ({
         expiryDate: expiryDate,
         user: userid,
         description: description,
+        offerPrice: offerValue,
       }
     )
     .catch((err) => console.log(err, "lol"));
@@ -191,6 +200,27 @@ export const deleteProduct = async ({ id }) => {
   }
 };
 
+//getproductbyofferprice
+export const getproductbyofferprice = async ({ user }) => {
+  let userid = mongoose.Types.ObjectId(user);
+  console.log(user, userid);
+  const products = await productModel.find({ user: userid });
+
+  if (products) {
+    let offerProduct = products.filter((data) => data.offerPrice === 0);
+    return {
+      success: true,
+      status: 200,
+      data: offerProduct,
+    };
+  } else {
+    return {
+      success: false,
+      status: 400,
+      message: "No data",
+    };
+  }
+};
 //getproductbydate
 export const getProductByDate = async ({ user, date }) => {
   let userid = mongoose.Types.ObjectId(user);
