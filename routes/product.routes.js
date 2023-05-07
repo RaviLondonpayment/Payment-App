@@ -25,7 +25,7 @@ router.post("/getbycustomer", verifyUser, getProductByCustomerController);
 
 router.post("/getbydate", verifyUser, getProductByDateController);
 
-router.post("/getByOffer", verifyUser, getProductByOfferPriceController);
+router.post("/getbyoffer", verifyUser, getProductByOfferPriceController);
 
 router.delete("/delete", verifyUser, deleteProductController);
 
