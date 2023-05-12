@@ -42,7 +42,7 @@ const productSchema = new Schema({
     type: String,
   },
   barCode: {
-    type: String,
+    type: Buffer,
   },
   offerPrice: {
     type: Number,

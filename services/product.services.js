@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import productModel from "../models/product.model.js";
-
+import { createCanvas } from "canvas";
+import JsBarcode from "jsbarcode";
 //calculation
 const calculation = (offer, price) => {
   return price - (price * offer) / 100;
@@ -22,7 +23,9 @@ export const createProduct = async ({
 }) => {
   let userid = mongoose.Types.ObjectId(user);
   let category = mongoose.Types.ObjectId(categoryid);
-
+  let canvas = createCanvas();
+  let barcode = Math.floor(Math.random() * process.env.PASSWORD_KEY);
+  let barcodeImage = JsBarcode(canvas, barcode);
   const today = new Date().toLocaleDateString("en-GB", {
     day: "numeric",
     month: "numeric",
@@ -43,6 +46,7 @@ export const createProduct = async ({
     description: description,
     offer: offer,
     offerPrice: offerValue,
+    barCode: barcodeImage,
   });
   await product.save();
   if (product) {
