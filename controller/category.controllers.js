@@ -2,6 +2,7 @@ import {
   createCategory,
   getCategoryByCustomer,
   getCategoryById,
+  getCount,
   updateCategory,
 } from "../services/category.services.js";
 
@@ -26,4 +27,9 @@ export const getCategoryByIdController = async (req, res) => {
 export const updateCategoryByIdController = async (req, res) => {
   const updateCategoryByIdService = await updateCategory(req.body);
   return res.json(updateCategoryByIdService);
+};
+
+export const getCountController = async (req, res) => {
+  const getCountService = await getCount(req.body);
+  return res.json(getCountService);
 };

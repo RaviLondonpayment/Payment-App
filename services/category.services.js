@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import categoryModel from "../models/category.model.js";
+import productModel from "../models/product.model.js";
 // import mongoose from "mongoose";
 //create category
 export const createCategory = async (
@@ -45,7 +46,7 @@ export const getAllCategories = async () => {
 //get category by id
 export const getCategoryById = async ({ id }) => {
   let objId = mongoose.Types.ObjectId(id);
-  const category =await categoryModel.findById({ _id: objId });
+  const category = await categoryModel.findById({ _id: objId });
   if (category) {
     return {
       success: true,
@@ -106,6 +107,28 @@ export const getCategoryByCustomer = async (id) => {
       success: false,
       status: 404,
       message: "not found",
+    };
+  }
+};
+
+//getcount
+export const getCount = async ({ id }) => {
+  const userid = mongoose.Types.ObjectId(id);
+  const categoryCount = await categoryModel.find({ userid: userid });
+  const productCount = await productModel.find({ userid: userid });
+
+  if (categoryCount && productCount) {
+    return {
+      success: true,
+      status: 200,
+      categoryCount: categoryCount.length,
+      productCount: productCount.length,
+    };
+  } else {
+    return {
+      success: false,
+      status: 404,
+      message: "Not found",
     };
   }
 };

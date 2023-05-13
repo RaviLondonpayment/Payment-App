@@ -120,10 +120,10 @@ export const login = async ({ email, password }) => {
 };
 
 //logout
-export const logout = async ({ id }) => {
+export const logout = async ({ tokenid }) => {
   let userid = mongoose.Types.ObjectId(id);
   const data = await tokenModel.findOneAndDelete({
-    userId: userid,
+    _id: userid,
   });
   if (data) {
     return {
