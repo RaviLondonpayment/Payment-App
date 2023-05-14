@@ -228,20 +228,18 @@ export const getproductbyofferprice = async ({ user }) => {
 //getproductbydate
 export const getProductByDate = async ({ user, date }) => {
   let userid = mongoose.Types.ObjectId(user);
+  // const expiry = new Date().toLocaleDateString("en-GB");
+  const today = new Date();
 
-  const today = new Date().toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-  });
-
-  console.log(date, "date");
-
-  const products = await productModel.find({
-    user: userid,
-    expiryDate: { $gte: today, $lt: date },
-  });
-  if (products) {
+  console.log(date, today, "date");
+  let error = "";
+  const products = await productModel
+    .find({
+      user: userid,
+      expiryDate: { $gte: today, $lt: date },
+    })
+    .catch((err) => (error = err));
+  if (products && !error) {
     return {
       success: true,
       status: 200,
@@ -251,7 +249,7 @@ export const getProductByDate = async ({ user, date }) => {
     return {
       success: false,
       status: 404,
-      message: "Product unavailable",
+      message: error ? error : "Product unavailable",
     };
   }
 };
