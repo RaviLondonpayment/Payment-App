@@ -7,6 +7,7 @@ import {
   getProductByDate,
   getProductByCategoryId,
   getproductbyofferprice,
+  getProductByBarCode,
 } from "../services/product.services.js";
 
 export const createProductController = async (req, res, next) => {
@@ -47,4 +48,9 @@ export const getProductByCategoryController = async (req, res, next) => {
 export const getProductByOfferPriceController = async (req, res) => {
   const getProductByOfferPriceService = await getproductbyofferprice(req.body);
   return res.json(getProductByOfferPriceService);
+};
+
+export const getProductByBarcodeController = async (req, res) => {
+  const getProductByBarcodeService = await getProductByBarCode(req.body);
+  return res.json(getProductByBarcodeService);
 };

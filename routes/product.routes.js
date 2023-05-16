@@ -2,6 +2,7 @@ import express from "express";
 import {
   createProductController,
   deleteProductController,
+  getProductByBarcodeController,
   getProductByCategoryController,
   getProductByCustomerController,
   getProductByDateController,
@@ -26,6 +27,8 @@ router.post("/getbycustomer", verifyUser, getProductByCustomerController);
 router.post("/getbydate", verifyUser, getProductByDateController);
 
 router.post("/getbyoffer", verifyUser, getProductByOfferPriceController);
+
+router.post("/getByBarcode", verifyUser, getProductByBarcodeController);
 
 router.delete("/delete", verifyUser, deleteProductController);
 

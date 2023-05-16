@@ -20,12 +20,13 @@ export const createProduct = async ({
   expiryDate,
   description,
   offer,
+  barCode,
 }) => {
   let userid = mongoose.Types.ObjectId(user);
   let category = mongoose.Types.ObjectId(categoryid);
   let canvas = createCanvas();
-  let barcode = Math.floor(Math.random() * process.env.PASSWORD_KEY);
-  let barcodeImage = JsBarcode(canvas, barcode);
+  // let barcode = Math.floor(Math.random() * process.env.PASSWORD_KEY);
+  // let barcodeImage = JsBarcode(canvas, barcode);
   const today = new Date().toLocaleDateString("en-GB", {
     day: "numeric",
     month: "numeric",
@@ -46,7 +47,7 @@ export const createProduct = async ({
     description: description,
     offer: offer,
     offerPrice: offerValue,
-    barCode: barcodeImage,
+    barCode: barCode,
   });
   await product.save();
   if (product) {
@@ -250,6 +251,27 @@ export const getProductByDate = async ({ user, date }) => {
       success: false,
       status: 404,
       message: error ? error : "Product unavailable",
+    };
+  }
+};
+
+//getProductbybarcode
+export const getProductByBarCode = async ({ barCode }) => {
+  let error = "";
+  const product = await productModel
+    .findOne({ barCode })
+    .catch((err) => (error = err));
+  if (product) {
+    return {
+      success: true,
+      status: 200,
+      data: product,
+    };
+  } else {
+    return {
+      success: false,
+      status: 404,
+      message: error ? error : "Not found",
     };
   }
 };
