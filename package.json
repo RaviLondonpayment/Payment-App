@@ -4,6 +4,7 @@
   "description": "nodejs project",
   "main": "server.js",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.335.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "canvas": "^2.11.2",

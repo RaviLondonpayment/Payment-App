@@ -24,7 +24,7 @@ const productSchema = new Schema({
     type: Number,
   },
   kilogram: {
-    type: Number,
+    type: String,
   },
   price: {
     type: Number,
