@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import userModel from "../models/user.model";
 
 //getuser
-export const getUser = async ({ id }) => {
-  let userid = mongoose.Types.ObjectId(id);
+export const getUser = async ({ user }) => {
+  let userid = mongoose.Types.ObjectId(user);
   let error = "";
   const user = await userModel
     .findOne({ _id: userid })
@@ -33,7 +33,7 @@ export const getUser = async ({ id }) => {
 
 //updateuser
 export const updateUser = async (payload) => {
-  let userid = mongoose.Types.ObjectId(payload.id);
+  let userid = mongoose.Types.ObjectId(payload.user);
   let error = "";
   const user = await userModel
     .findOneAndUpdate(

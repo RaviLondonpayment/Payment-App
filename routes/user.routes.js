@@ -9,6 +9,6 @@ let router = express.Router();
 
 router.post("/getuser", verifyUser, getUserController);
 
-router.post("/updateUser", verifyUser, updateUserController);
+router.post("/updateuser", verifyUser, updateUserController);
 
 export { router };
