@@ -2,8 +2,8 @@ import express from "express";
 import {
   getUserController,
   updateUserController,
-} from "../controller/user.controllers";
-import { verifyUser } from "../verification/verification";
+} from "../controller/user.controllers.js";
+import { verifyUser } from "../verification/verification.js";
 
 let router = express.Router();
 

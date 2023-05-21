@@ -1,4 +1,4 @@
-import { getUser, updateUser } from "../services/user.services";
+import { getUser, updateUser } from "../services/user.services.js";
 
 export const getUserController = async (req, res) => {
   let getUserService = await getUser(req.body);

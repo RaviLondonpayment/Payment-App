@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
-import userModel from "../models/user.model";
+import userModel from "../models/user.model.js";
 
 //getuser
 export const getUser = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
   let error = "";
-  const user = await userModel
+  const users = await userModel
     .findOne({ _id: userid })
     .catch((err) => (error = err));
-  if (user) {
+  if (users) {
     return {
       success: true,
       status: 200,
-      data: user,
+      data: users,
     };
   } else {
     if (error) {
