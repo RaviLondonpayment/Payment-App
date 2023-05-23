@@ -114,8 +114,8 @@ export const getCategoryByCustomer = async (id) => {
 //getcount
 export const getCount = async ({ user }) => {
   const userid = mongoose.Types.ObjectId(user);
-  const categoryCount = await categoryModel.find({ userid: userid });
-  const productCount = await productModel.find({ userid: userid });
+  const categoryCount = await categoryModel.find({ user: userid });
+  const productCount = await productModel.find({ user: userid });
 
   if (categoryCount && productCount) {
     return {

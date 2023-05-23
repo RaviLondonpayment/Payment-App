@@ -142,7 +142,7 @@ export const logout = async ({ tokenid }) => {
 
 //requestpasswordreset
 export const requestPasswordReset = async (email) => {
-  const user = await userModel.findOne({ email });
+  const user = await userModel.findOne({ email: email });
   if (!user) throw new Error("Email does not exist");
 
   let token = await tokenModel.findOne({ userId: user._id });
