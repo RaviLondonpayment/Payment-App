@@ -1,20 +1,36 @@
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import mongoose from "mongoose";
+import { s3Client } from "../libraries/bucket.js";
 import categoryModel from "../models/category.model.js";
 import productModel from "../models/product.model.js";
+import crypto from "crypto";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
 // import mongoose from "mongoose";
 //create category
 export const createCategory = async (
-  { image, categoryName, categoryDescription, colorCode, user },
-  res
+  { categoryName, categoryDescription, colorCode, user },
+  file
 ) => {
-  // let id = new mongoose.Types.ObjectId(user);
+  const uniqueName = crypto.randomBytes(32).toString("hex");
+  // console.log(file, process.env.REGION);
+  const command = new PutObjectCommand({
+    Bucket: process.env.SOURCE_BUCKET,
+    Key: uniqueName,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+  });
+
+  await s3Client.send(command).catch((err) => console.log(err));
+
+  let id = new mongoose.Types.ObjectId(user);
   // console.log("lol", categoryName, categoryDescription, colorCode, user);
   const category = new categoryModel({
-    image: image ? image : "",
+    image: uniqueName,
     categoryName: categoryName,
     categoryDescription: categoryDescription,
     colorCode: colorCode,
-    user: res.locals.user,
+    user: id,
   });
   let error = "";
   await category.save().catch((err) => {
@@ -46,7 +62,14 @@ export const getAllCategories = async () => {
 //get category by id
 export const getCategoryById = async ({ id }) => {
   let objId = mongoose.Types.ObjectId(id);
+
   const category = await categoryModel.findById({ _id: objId });
+  const command = new GetObjectCommand({
+    Bucket: process.env.SOURCE_BUCKET,
+    Key: category.image,
+  });
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+  category.image = url;
   if (category) {
     return {
       success: true,
@@ -59,23 +82,29 @@ export const getCategoryById = async ({ id }) => {
 };
 
 //update category
-export const updateCategory = async ({
-  id,
-  image,
-  categoryName,
-  categoryDescription,
-  colorCode,
-  user,
-}) => {
+export const updateCategory = async (
+  { id, categoryName, categoryDescription, colorCode, user },
+  file
+) => {
   let objId = mongoose.Types.ObjectId(id);
+  const uniqueName = crypto.randomBytes(32).toString("hex");
+  // console.log(file, process.env.REGION);
+  const command = new PutObjectCommand({
+    Bucket: process.env.SOURCE_BUCKET,
+    Key: uniqueName,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+  });
+  await s3Client.send(command).catch((err) => console.log(err));
   // console.log(objId, "lol", id, categoryName, categoryDescription, colorCode);
   const category = await categoryModel.findByIdAndUpdate(
     { _id: objId },
     {
-      image: image,
+      image: uniqueName,
       categoryName: categoryName,
       categoryDescription: categoryDescription,
       colorCode: colorCode,
+      user: user,
     }
   );
   if (category) {
@@ -94,8 +123,19 @@ export const updateCategory = async ({
 };
 
 //get category by customer
-export const getCategoryByCustomer = async (id) => {
-  const category = await categoryModel.find({ user: id });
+export const getCategoryByCustomer = async ({ user }) => {
+  // console.log("getbycustomer");
+  let objId = mongoose.Types.ObjectId(user);
+  const category = await categoryModel.find({ user: objId });
+  for (const cat of category) {
+    // console.log("value", cat);
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: cat.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    cat.image = url;
+  }
   if (category) {
     return {
       success: true,

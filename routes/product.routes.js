@@ -11,12 +11,25 @@ import {
   updateProductController,
 } from "../controller/product.controllers.js";
 import { verifyUser } from "../verification/verification.js";
+import multer from "multer";
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.post("/create", verifyUser, createProductController);
+router.post(
+  "/create",
+  upload.single("image"),
+  verifyUser,
+  createProductController
+);
 
-router.post("/update", verifyUser, updateProductController);
+router.post(
+  "/update",
+  upload.single("image"),
+  verifyUser,
+  updateProductController
+);
 
 router.post("/getbyid", verifyUser, getProductByIdController);
 

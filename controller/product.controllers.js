@@ -11,7 +11,7 @@ import {
 } from "../services/product.services.js";
 
 export const createProductController = async (req, res, next) => {
-  const createProductService = await createProduct(req.body);
+  const createProductService = await createProduct(req.body, req.file);
   return res.json(createProductService);
 };
 
@@ -26,7 +26,7 @@ export const getProductByIdController = async (req, res, next) => {
 };
 
 export const updateProductController = async (req, res, next) => {
-  const getProductService = await updateProduct(req.body);
+  const getProductService = await updateProduct(req.body, req.file);
   return res.json(getProductService);
 };
 

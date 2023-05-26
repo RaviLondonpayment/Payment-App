@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({
   image: {
-    type: Buffer,
+    type: String,
   },
   categoryName: {
     type: String,

@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 import productModel from "../models/product.model.js";
 import { createCanvas } from "canvas";
+import crypto from "crypto";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { s3Client } from "../libraries/bucket.js";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+
 import JsBarcode from "jsbarcode";
 //calculation
 const calculation = (offer, price) => {
@@ -8,20 +13,32 @@ const calculation = (offer, price) => {
 };
 
 //create product
-export const createProduct = async ({
-  user,
-  categoryid,
-  productName,
-  image,
-  quantity,
-  kilogram,
-  price,
-  manufacturingDate,
-  expiryDate,
-  description,
-  offer,
-  barCode,
-}) => {
+export const createProduct = async (
+  {
+    user,
+    categoryid,
+    productName,
+    quantity,
+    kilogram,
+    price,
+    manufacturingDate,
+    expiryDate,
+    description,
+    offer,
+    barCode,
+  },
+  file
+) => {
+  const uniqueName = crypto.randomBytes(32).toString("hex");
+  // console.log(file, process.env.REGION);
+  const command = new PutObjectCommand({
+    Bucket: process.env.SOURCE_BUCKET,
+    Key: uniqueName,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+  });
+
+  await s3Client.send(command).catch((err) => console.log(err));
   let userid = mongoose.Types.ObjectId(user);
   let category = mongoose.Types.ObjectId(categoryid);
   let canvas = createCanvas();
@@ -38,7 +55,6 @@ export const createProduct = async ({
     productName: productName,
     category: category,
     quantity: quantity,
-    image: image,
     manufacturingDate: manufacturingDate,
     kilogram: kilogram,
     price: price,
@@ -48,6 +64,7 @@ export const createProduct = async ({
     offer: offer,
     offerPrice: offerValue,
     barCode: barCode,
+    image: uniqueName,
   });
   await product.save();
   if (product) {
@@ -73,7 +90,14 @@ export const getProductByCustomer = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
   console.log(user, userid);
   const products = await productModel.find({ user: userid });
-
+  for (const cat of products) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: cat.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    cat.image = url;
+  }
   if (products) {
     return {
       success: true,
@@ -93,7 +117,12 @@ export const getProductByCustomer = async ({ user }) => {
 export const getProductById = async ({ id }) => {
   let user = mongoose.Types.ObjectId(id);
   const products = await productModel.findById({ _id: user });
-
+  const command = new GetObjectCommand({
+    Bucket: process.env.SOURCE_BUCKET,
+    Key: products.image,
+  });
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+  products.image = url;
   if (products) {
     return {
       success: true,
@@ -114,7 +143,14 @@ export const getProductByCategoryId = async ({ category }) => {
   // console.log("category", category);
   let categoryid = mongoose.Types.ObjectId(category);
   const products = await productModel.find({ category: categoryid });
-
+  for (const cat of products) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: cat.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    cat.image = url;
+  }
   if (products) {
     return {
       success: true,
@@ -131,26 +167,38 @@ export const getProductByCategoryId = async ({ category }) => {
 };
 
 //update product
-export const updateProduct = async ({
-  id,
-  name,
-  category,
-  user,
-  quantity,
-  image,
-  manufacturingDate,
-  kilogram,
-  price,
-  expiryDate,
-  description,
-}) => {
-  console.log("triggered");
+export const updateProduct = async (
+  {
+    id,
+    name,
+    category,
+    user,
+    quantity,
+    manufacturingDate,
+    kilogram,
+    price,
+    expiryDate,
+    description,
+    offer,
+  },
+  file
+) => {
+  const uniqueName = crypto.randomBytes(32).toString("hex");
+  let offerValue = calculation(offer, price);
+  // console.log(file, process.env.REGION);
+  const command = new PutObjectCommand({
+    Bucket: process.env.SOURCE_BUCKET,
+    Key: uniqueName,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+  });
+
+  await s3Client.send(command).catch((err) => console.log(err));
   let productid = mongoose.Types.ObjectId(id);
   let categoryid = mongoose.Types.ObjectId(category);
   let userid = mongoose.Types.ObjectId(user);
-  let offerValue = calculation(offer, price);
+  // let offerValue = calculation(offer, price);
 
-  console.log("check", productid);
   const products = await productModel
     .findByIdAndUpdate(
       { _id: productid },
@@ -158,7 +206,7 @@ export const updateProduct = async ({
         productName: name,
         categoryid: categoryid,
         quantity: quantity,
-        image: image,
+        image: uniqueName,
         manufacturingDate: manufacturingDate,
         kilogram: kilogram,
         price: price,
@@ -210,9 +258,16 @@ export const getproductbyofferprice = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
   console.log(user, userid);
   const products = await productModel.find({ user: userid });
-
+  for (const cat of products) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: cat.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    cat.image = url;
+  }
   if (products) {
-    let offerProduct = products.filter((data) => data.offerPrice === 0);
+    let offerProduct = products.filter((data) => data.offerPrice > 0);
     return {
       success: true,
       status: 200,
@@ -232,7 +287,7 @@ export const getProductByDate = async ({ user, date }) => {
   // const expiry = new Date().toLocaleDateString("en-GB");
   const today = new Date();
 
-  console.log(date, today, "date");
+  // console.log(date, today, "date");
   let error = "";
   const products = await productModel
     .find({
@@ -240,6 +295,14 @@ export const getProductByDate = async ({ user, date }) => {
       expiryDate: { $gte: today, $lt: date },
     })
     .catch((err) => (error = err));
+  for (const cat of products) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: cat.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    cat.image = url;
+  }
   if (products && !error) {
     return {
       success: true,
@@ -261,6 +324,14 @@ export const getProductByBarCode = async ({ barCode }) => {
   const product = await productModel
     .findOne({ barCode })
     .catch((err) => (error = err));
+  for (const cat of products) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: cat.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    cat.image = url;
+  }
   if (product) {
     return {
       success: true,

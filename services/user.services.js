@@ -36,7 +36,7 @@ export const updateUser = async (payload) => {
   let userid = mongoose.Types.ObjectId(payload.user);
   let error = "";
   const user = await userModel
-    .findOneAndUpdate(
+    .findByIdAndUpdate(
       { _id: userid },
       {
         email: payload.email,

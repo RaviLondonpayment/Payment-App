@@ -7,12 +7,26 @@ import {
   updateCategoryByIdController,
 } from "../controller/category.controllers.js";
 import { verifyUser } from "../verification/verification.js";
+import multer from "multer";
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.post("/create", verifyUser, createCategoryController);
+router.post(
+  "/create",
+  upload.single("image"),
+  verifyUser,
 
-router.post("/update", verifyUser, updateCategoryByIdController);
+  createCategoryController
+);
+
+router.post(
+  "/update",
+  upload.single("image"),
+  verifyUser,
+  updateCategoryByIdController
+);
 
 router.post("/getbyid", verifyUser, getCategoryByIdController);
 
