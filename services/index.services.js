@@ -142,29 +142,35 @@ export const logout = async ({ tokenid }) => {
 
 //requestpasswordreset
 export const requestPasswordReset = async (email) => {
-  const user = await userModel.findOne({ email: email });
+  const passwordGenerator =
+    "@" + Math.floor(Math.random() * process.env.PASSWORD_KEY) + "lpa";
+  const hash = await bcrypt.hash(passwordGenerator, Number(bcryptSalt));
+  const user = await userModel.findOneAndUpdate(
+    { email: email },
+    { $set: { password: hash } },
+    { new: true }
+  );
   if (!user) throw new Error("Email does not exist");
 
   let token = await tokenModel.findOne({ userId: user._id });
   if (token) await token.deleteOne();
 
   let resetToken = crypto.randomBytes(32).toString("hex");
-  const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+  const hashtoken = await bcrypt.hash(resetToken, Number(bcryptSalt));
 
   await new tokenModel({
     userId: user._id,
-    token: hash,
+    token: hashtoken,
     createdAt: Date.now(),
   }).save();
-
-  const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
+  // const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
 
   let response = await sendEmail(
     user.email,
     "Password Reset Request",
     {
       name: user.name,
-      link: link,
+      link: passwordGenerator,
     },
     "./template/requestResetPassword.handlebars"
   );
