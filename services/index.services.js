@@ -121,7 +121,7 @@ export const login = async ({ email, password }) => {
 
 //logout
 export const logout = async ({ tokenid }) => {
-  let userid = mongoose.Types.ObjectId(id);
+  let userid = mongoose.Types.ObjectId(tokenid);
   const data = await tokenModel.findOneAndDelete({
     _id: userid,
   });
@@ -175,7 +175,7 @@ export const requestPasswordReset = async (email) => {
     "./template/requestResetPassword.handlebars"
   );
   //console.log("mail", response);
-  return { link };
+  return { success: true, status: 200, message: "reset working" };
 };
 
 //resetpassword

@@ -45,7 +45,7 @@ export const sendEmail = async (email, subject, payload, template) => {
       if (error) {
         return error;
       } else {
-        // console.log("success");
+        console.log("success", info);
         return res.status(200).json({
           success: true,
         });
