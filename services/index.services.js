@@ -181,25 +181,25 @@ export const requestPasswordReset = async (email) => {
 //resetpassword
 export const resetPassword = async (userId, token, password) => {
   //console.log(userId);
-  let passwordResetToken = await tokenModel.findOne({ userId });
+  // let passwordResetToken = await tokenModel.findOne({ userId });
 
-  if (!passwordResetToken) {
-    return {
-      success: false,
-      message: "Invalid or expired password reset token",
-    };
-  }
+  // if (!passwordResetToken) {
+  //   return {
+  //     success: false,
+  //     message: "Invalid or expired password reset token",
+  //   };
+  // }
 
-  const isValid = await bcrypt.compare(token, passwordResetToken.token);
+  // const isValid = await bcrypt.compare(token, passwordResetToken.token);
   // //console.log(isValid, "output");
-  if (!isValid) {
-    // throw new Error("Invalid or expired password reset token");
-    return {
-      success: false,
-      status: 404,
-      message: "Invalid or expired password reset token",
-    };
-  }
+  // if (!isValid) {
+  //   // throw new Error("Invalid or expired password reset token");
+  //   return {
+  //     success: false,
+  //     status: 404,
+  //     message: "Invalid or expired password reset token",
+  //   };
+  // }
 
   const hash = await bcrypt.hash(password, Number(bcryptSalt));
 
@@ -211,16 +211,20 @@ export const resetPassword = async (userId, token, password) => {
 
   const user = await userModel.findById({ _id: userId });
 
-  sendEmail(
-    user.email,
-    "Password Reset Successfully",
-    {
-      name: user.name,
-    },
-    "./template/resetPassword.handlebars"
-  );
+  // sendEmail(
+  //   user.email,
+  //   "Password Reset Successfully",
+  //   {
+  //     name: user.name,
+  //   },
+  //   "./template/resetPassword.handlebars"
+  // );
 
-  await passwordResetToken.deleteOne();
+  // await passwordResetToken.deleteOne();
 
-  return { message: "Password reset was successful" };
+  return {
+    success: true,
+    status: 200,
+    message: "Password reset was successful",
+  };
 };
