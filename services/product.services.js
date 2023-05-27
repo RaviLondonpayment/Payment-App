@@ -29,16 +29,19 @@ export const createProduct = async (
   },
   file
 ) => {
-  const uniqueName = crypto.randomBytes(32).toString("hex");
-  // console.log(file, process.env.REGION);
-  const command = new PutObjectCommand({
-    Bucket: process.env.SOURCE_BUCKET,
-    Key: uniqueName,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  });
+  let uniqueName = "";
+  if (file && file.buffer) {
+    uniqueName = crypto.randomBytes(32).toString("hex");
+    // console.log(file, process.env.REGION);
+    const command = new PutObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: uniqueName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
 
-  await s3Client.send(command).catch((err) => console.log(err));
+    await s3Client.send(command).catch((err) => console.log(err));
+  }
   let userid = mongoose.Types.ObjectId(user);
   let category = mongoose.Types.ObjectId(categoryid);
   let canvas = createCanvas();
@@ -91,12 +94,14 @@ export const getProductByCustomer = async ({ user }) => {
   console.log(user, userid);
   const products = await productModel.find({ user: userid });
   for (const cat of products) {
-    const command = new GetObjectCommand({
-      Bucket: process.env.SOURCE_BUCKET,
-      Key: cat.image,
-    });
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-    cat.image = url;
+    if (cat.image) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
+    }
   }
   if (products) {
     return {
@@ -117,12 +122,14 @@ export const getProductByCustomer = async ({ user }) => {
 export const getProductById = async ({ id }) => {
   let user = mongoose.Types.ObjectId(id);
   const products = await productModel.findById({ _id: user });
-  const command = new GetObjectCommand({
-    Bucket: process.env.SOURCE_BUCKET,
-    Key: products.image,
-  });
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-  products.image = url;
+  if (cat.image) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: products.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    products.image = url;
+  }
   if (products) {
     return {
       success: true,
@@ -144,12 +151,14 @@ export const getProductByCategoryId = async ({ category }) => {
   let categoryid = mongoose.Types.ObjectId(category);
   const products = await productModel.find({ category: categoryid });
   for (const cat of products) {
-    const command = new GetObjectCommand({
-      Bucket: process.env.SOURCE_BUCKET,
-      Key: cat.image,
-    });
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-    cat.image = url;
+    if (cat.image) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
+    }
   }
   if (products) {
     return {
@@ -254,7 +263,7 @@ export const deleteProduct = async ({ id }) => {
 };
 
 //getproductbyofferprice
-export const getproductbyofferprice = async ({ user }) => {
+export const getproductbyofferprice = async ({ user, offer }) => {
   let userid = mongoose.Types.ObjectId(user);
   console.log(user, userid);
   const products = await productModel.find({ user: userid });
@@ -267,7 +276,10 @@ export const getproductbyofferprice = async ({ user }) => {
     cat.image = url;
   }
   if (products) {
-    let offerProduct = products.filter((data) => data.offerPrice > 0);
+    let offerProduct = products.filter((data) => data.offer > 0);
+    if (offer) {
+      offerPrice = products.filter((data) => data.offer >= offer);
+    }
     return {
       success: true,
       status: 200,

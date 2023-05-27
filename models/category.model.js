@@ -15,7 +15,6 @@ const categorySchema = new Schema({
   },
   categoryDescription: {
     type: String,
-    required: true,
   },
   colorCode: {
     type: String,

@@ -12,16 +12,19 @@ export const createCategory = async (
   { categoryName, categoryDescription, colorCode, user },
   file
 ) => {
-  const uniqueName = crypto.randomBytes(32).toString("hex");
-  // console.log(file, process.env.REGION);
-  const command = new PutObjectCommand({
-    Bucket: process.env.SOURCE_BUCKET,
-    Key: uniqueName,
-    Body: file.image,
-    ContentType: file.mimetype,
-  });
+  let uniqueName = "";
+  if (file && file.buffer) {
+    uniqueName = crypto.randomBytes(32).toString("hex");
+    // console.log(file, process.env.REGION);
+    const command = new PutObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: uniqueName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
 
-  await s3Client.send(command).catch((err) => console.log(err));
+    await s3Client.send(command).catch((err) => console.log(err));
+  }
 
   let id = new mongoose.Types.ObjectId(user);
   // console.log("lol", categoryName, categoryDescription, colorCode, user);
@@ -64,17 +67,21 @@ export const getCategoryById = async ({ id }) => {
   let objId = mongoose.Types.ObjectId(id);
 
   const category = await categoryModel.findById({ _id: objId });
-  const command = new GetObjectCommand({
-    Bucket: process.env.SOURCE_BUCKET,
-    Key: category.image,
-  });
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-  category.image = url;
+  let imageId = category.image;
+  if (category.image) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: category.image,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+    category.image = url;
+  }
   if (category) {
     return {
       success: true,
       status: 200,
       data: category,
+      imageId: imageId,
     };
   } else {
     return { success: false, status: 404, message: "Category unavailable" };
@@ -83,24 +90,27 @@ export const getCategoryById = async ({ id }) => {
 
 //update category
 export const updateCategory = async (
-  { id, categoryName, categoryDescription, colorCode, user },
+  { id, categoryName, categoryDescription, colorCode, user, imageName },
   file
 ) => {
   let objId = mongoose.Types.ObjectId(id);
-  const uniqueName = crypto.randomBytes(32).toString("hex");
-  // console.log(file, process.env.REGION);
-  const command = new PutObjectCommand({
-    Bucket: process.env.SOURCE_BUCKET,
-    Key: uniqueName,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  });
-  await s3Client.send(command).catch((err) => console.log(err));
+  let uniqueName = "";
+  if (file && file.buffer) {
+    uniqueName = crypto.randomBytes(32).toString("hex");
+    // console.log(file, process.env.REGION);
+    const command = new PutObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: uniqueName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
+    await s3Client.send(command).catch((err) => console.log(err));
+  }
   // console.log(objId, "lol", id, categoryName, categoryDescription, colorCode);
   const category = await categoryModel.findByIdAndUpdate(
     { _id: objId },
     {
-      image: uniqueName,
+      image: uniqueName ? uniqueName : imageName,
       categoryName: categoryName,
       categoryDescription: categoryDescription,
       colorCode: colorCode,
@@ -127,14 +137,16 @@ export const getCategoryByCustomer = async ({ user }) => {
   // console.log("getbycustomer");
   let objId = mongoose.Types.ObjectId(user);
   const category = await categoryModel.find({ user: objId });
-  for (const cat of category) {
-    // console.log("value", cat);
-    const command = new GetObjectCommand({
-      Bucket: process.env.SOURCE_BUCKET,
-      Key: cat.image,
-    });
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-    cat.image = url;
+  if (category.image) {
+    for (const cat of category) {
+      // console.log("value", cat);
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
+    }
   }
   if (category) {
     return {
