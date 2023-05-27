@@ -17,7 +17,7 @@ export const createCategory = async (
   const command = new PutObjectCommand({
     Bucket: process.env.SOURCE_BUCKET,
     Key: uniqueName,
-    Body: file.buffer,
+    Body: file.image,
     ContentType: file.mimetype,
   });
 
