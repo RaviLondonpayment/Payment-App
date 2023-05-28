@@ -142,15 +142,17 @@ export const logout = async ({ tokenid }) => {
 
 //requestpasswordreset
 export const requestPasswordReset = async (email) => {
+  let error = "";
   const passwordGenerator =
     "@" + Math.floor(Math.random() * process.env.PASSWORD_KEY) + "lpa";
   const hash = await bcrypt.hash(passwordGenerator, Number(bcryptSalt));
-  const user = await userModel.findOneAndUpdate(
-    { email: email },
-    { $set: { password: hash } },
-    { new: true }
-  );
-  if (!user) throw new Error("Email does not exist");
+  const user = await userModel
+    .findOneAndUpdate(
+      { email: email },
+      { $set: { password: hash } },
+      { new: true }
+    )
+    .catch((err) => (error = err));
 
   let token = await tokenModel.findOne({ userId: user._id });
   if (token) await token.deleteOne();
@@ -175,7 +177,11 @@ export const requestPasswordReset = async (email) => {
     "./template/requestResetPassword.handlebars"
   );
   //console.log("mail", response);
-  return { success: true, status: 200, message: "reset working" };
+  if (user) {
+    return { success: true, status: 200, message: "reset working" };
+  } else {
+    return { success: false, message: error };
+  }
 };
 
 //resetpassword
