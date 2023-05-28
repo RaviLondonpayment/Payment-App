@@ -41,7 +41,6 @@ export const updateUser = async (payload) => {
       {
         email: payload.email,
         name: payload.name,
-        password: passwordGenerator,
         ownerName: payload.ownerName,
         shopAddress: payload.shopAddress,
         country: payload.country,

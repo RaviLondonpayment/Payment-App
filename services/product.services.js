@@ -223,6 +223,7 @@ export const updateProduct = async (
         user: userid,
         description: description,
         offerPrice: offerValue,
+        offer: offer,
       }
     )
     .catch((err) => console.log(err, "lol"));

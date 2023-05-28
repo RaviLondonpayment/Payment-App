@@ -82,11 +82,11 @@ export const signup = async (payload) => {
 export const login = async ({ email, password }) => {
   // let token = sign();
   let user = await userModel.findOne({ email: email });
-  // //console.log("User name", user);
+  // console.log("User name", user);
 
   if (user) {
-    let passwordCheck = bcrypt.compare(password, user.password);
-
+    let passwordCheck = await bcrypt.compare(password, user.password);
+    // console.log(passwordCheck);
     if (passwordCheck) {
       let resetToken = crypto.randomBytes(32).toString("hex");
       const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
