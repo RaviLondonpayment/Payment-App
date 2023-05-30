@@ -47,6 +47,9 @@ const productSchema = new Schema({
   offerPrice: {
     type: Number,
   },
+  imageNumber: {
+    type: String,
+  },
 });
 
 export default mongoose.model("product", productSchema);

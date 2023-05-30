@@ -95,6 +95,8 @@ export const getProductByCustomer = async ({ user }) => {
   const products = await productModel.find({ user: userid });
   for (const cat of products) {
     if (cat.image) {
+      // let prod=cat
+      cat.imageNumber = cat.image;
       const command = new GetObjectCommand({
         Bucket: process.env.SOURCE_BUCKET,
         Key: cat.image,

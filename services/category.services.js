@@ -90,7 +90,7 @@ export const getCategoryById = async ({ id }) => {
 
 //update category
 export const updateCategory = async (
-  { id, categoryName, categoryDescription, colorCode, user, imageNumner },
+  { id, categoryName, categoryDescription, colorCode, user, imageNumber },
   file
 ) => {
   let objId = mongoose.Types.ObjectId(id);
@@ -140,6 +140,7 @@ export const getCategoryByCustomer = async ({ user }) => {
   if (category.image) {
     for (const cat of category) {
       // console.log("value", cat);
+      cat.imageNumber = cat.image;
       const command = new GetObjectCommand({
         Bucket: process.env.SOURCE_BUCKET,
         Key: cat.image,

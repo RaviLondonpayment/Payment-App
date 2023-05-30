@@ -8,7 +8,19 @@ export const getUser = async ({ user }) => {
   const users = await userModel
     .findOne({ _id: userid })
     .catch((err) => (error = err));
+
   if (users) {
+    if (users.image) {
+      users.imageNumber = users.image;
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: category.image,
+      });
+
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+
+      users.image = url;
+    }
     return {
       success: true,
       status: 200,
