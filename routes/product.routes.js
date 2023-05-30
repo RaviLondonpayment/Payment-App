@@ -43,6 +43,6 @@ router.post("/getbyoffer", verifyUser, getProductByOfferPriceController);
 
 router.post("/getByBarcode", verifyUser, getProductByBarcodeController);
 
-router.delete("/delete", verifyUser, deleteProductController);
+router.post("/delete", verifyUser, deleteProductController);
 
 export { router };
