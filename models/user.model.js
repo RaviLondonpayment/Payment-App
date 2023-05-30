@@ -32,6 +32,9 @@ const userSchema = new Schema({
   subscribed: {
     type: Boolean,
   },
+  image: {
+    type: String,
+  },
 });
 
 userSchema.pre("save", async function (next) {

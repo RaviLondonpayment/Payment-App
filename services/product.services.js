@@ -122,7 +122,9 @@ export const getProductByCustomer = async ({ user }) => {
 export const getProductById = async ({ id }) => {
   let user = mongoose.Types.ObjectId(id);
   const products = await productModel.findById({ _id: user });
+  let imageNumber = "";
   if (cat.image) {
+    imageNumber = products.image;
     const command = new GetObjectCommand({
       Bucket: process.env.SOURCE_BUCKET,
       Key: products.image,
@@ -135,6 +137,7 @@ export const getProductById = async ({ id }) => {
       success: true,
       status: 200,
       data: products,
+      imageNumber: imageNumber,
     };
   } else {
     return {
@@ -189,20 +192,26 @@ export const updateProduct = async (
     expiryDate,
     description,
     offer,
+    imageNumber,
   },
   file
 ) => {
-  const uniqueName = crypto.randomBytes(32).toString("hex");
+  let uniqueName = "";
   let offerValue = calculation(offer, price);
-  // console.log(file, process.env.REGION);
-  const command = new PutObjectCommand({
-    Bucket: process.env.SOURCE_BUCKET,
-    Key: uniqueName,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  });
+  if (file && file.buffer) {
+    uniqueName = crypto.randomBytes(32).toString("hex");
+    // console.log(file, process.env.REGION);
+    const command = new PutObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: uniqueName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
 
-  await s3Client.send(command).catch((err) => console.log(err));
+    await s3Client.send(command).catch((err) => console.log(err));
+  } else {
+    uniqueName = imageNumber;
+  }
   let productid = mongoose.Types.ObjectId(id);
   let categoryid = mongoose.Types.ObjectId(category);
   let userid = mongoose.Types.ObjectId(user);

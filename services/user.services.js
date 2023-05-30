@@ -32,7 +32,20 @@ export const getUser = async ({ user }) => {
 };
 
 //updateuser
-export const updateUser = async (payload) => {
+export const updateUser = async (payload, file) => {
+  let uniqueName = "";
+  if (file && file.buffer) {
+    uniqueName = crypto.randomBytes(32).toString("hex");
+    // console.log(file, process.env.REGION);
+    const command = new PutObjectCommand({
+      Bucket: process.env.SOURCE_BUCKET,
+      Key: uniqueName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
+
+    await s3Client.send(command).catch((err) => console.log(err));
+  }
   let userid = mongoose.Types.ObjectId(payload.user);
   let error = "";
   const user = await userModel
@@ -44,6 +57,7 @@ export const updateUser = async (payload) => {
         ownerName: payload.ownerName,
         shopAddress: payload.shopAddress,
         country: payload.country,
+        image: uniqueName,
       }
     )
     .catch((err) => (error = err));

@@ -6,6 +6,6 @@ export const getUserController = async (req, res) => {
 };
 
 export const updateUserController = async (req, res) => {
-  let updateUserService = await updateUser(req.body);
+  let updateUserService = await updateUser(req.body, req.file);
   return res.json(updateUserService);
 };

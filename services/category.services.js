@@ -81,7 +81,7 @@ export const getCategoryById = async ({ id }) => {
       success: true,
       status: 200,
       data: category,
-      imageId: imageId,
+      imageNumber: imageId,
     };
   } else {
     return { success: false, status: 404, message: "Category unavailable" };
@@ -90,7 +90,7 @@ export const getCategoryById = async ({ id }) => {
 
 //update category
 export const updateCategory = async (
-  { id, categoryName, categoryDescription, colorCode, user, imageName },
+  { id, categoryName, categoryDescription, colorCode, user, imageNumner },
   file
 ) => {
   let objId = mongoose.Types.ObjectId(id);
@@ -110,7 +110,7 @@ export const updateCategory = async (
   const category = await categoryModel.findByIdAndUpdate(
     { _id: objId },
     {
-      image: uniqueName ? uniqueName : imageName,
+      image: uniqueName ? uniqueName : imageNumber,
       categoryName: categoryName,
       categoryDescription: categoryDescription,
       colorCode: colorCode,
