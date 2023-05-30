@@ -6,7 +6,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client } from "../libraries/bucket.js";
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 
-import JsBarcode from "jsbarcode";
+// import JsBarcode from "jsbarcode";
 //calculation
 const calculation = (offer, price) => {
   return price - (price * offer) / 100;
