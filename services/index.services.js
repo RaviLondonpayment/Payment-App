@@ -102,6 +102,7 @@ export const login = async ({ email, password }) => {
         message: `welcome ${user.ownerName}`,
         token: resetToken,
         tokenid: data._id,
+        username: user.ownerName,
       };
     } else {
       return {
