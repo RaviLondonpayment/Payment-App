@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import userModel from "../models/user.model.js";
 import crypto from "crypto";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3Client } from "../libraries/bucket.js";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
 //getuser
 export const getUser = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
