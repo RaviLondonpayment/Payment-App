@@ -125,7 +125,7 @@ export const getProductById = async ({ id }) => {
   let user = mongoose.Types.ObjectId(id);
   const products = await productModel.findById({ _id: user });
   let imageNumber = "";
-  if (cat.image) {
+  if (products.image) {
     imageNumber = products.image;
     const command = new GetObjectCommand({
       Bucket: process.env.SOURCE_BUCKET,
@@ -348,7 +348,7 @@ export const getProductByBarCode = async ({ barCode }) => {
   const product = await productModel
     .findOne({ barCode })
     .catch((err) => (error = err));
-  for (const cat of products) {
+  for (const cat of product) {
     const command = new GetObjectCommand({
       Bucket: process.env.SOURCE_BUCKET,
       Key: cat.image,
