@@ -195,6 +195,7 @@ export const updateProduct = async (
     description,
     offer,
     imageNumber,
+    barCode,
   },
   file
 ) => {
@@ -235,6 +236,7 @@ export const updateProduct = async (
         description: description,
         offerPrice: offerValue,
         offer: offer,
+        barCode: barCode,
       }
     )
     .catch((err) => console.log(err, "lol"));
