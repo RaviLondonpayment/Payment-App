@@ -279,20 +279,23 @@ export const deleteProduct = async ({ id }) => {
 //getproductbyofferprice
 export const getproductbyofferprice = async ({ user, offer }) => {
   let userid = mongoose.Types.ObjectId(user);
-  console.log(user, userid);
+  // console.log("offer", user, userid);
   const products = await productModel.find({ user: userid });
+  // console.log("offer", products);
   for (const cat of products) {
-    const command = new GetObjectCommand({
-      Bucket: process.env.SOURCE_BUCKET,
-      Key: cat.image,
-    });
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-    cat.image = url;
+    if (cat.image) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
+    }
   }
   if (products) {
     let offerProduct = products.filter((data) => data.offer > 0);
     if (offer) {
-      offerPrice = products.filter((data) => data.offer >= offer);
+      offerProduct = products.filter((data) => data.offer >= offer);
     }
     return {
       success: true,
@@ -312,7 +315,7 @@ export const getProductByDate = async ({ user, date }) => {
   let userid = mongoose.Types.ObjectId(user);
   // const expiry = new Date().toLocaleDateString("en-GB");
   const today = new Date();
-
+  console.log("date", today, date);
   // console.log(date, today, "date");
   let error = "";
   const products = await productModel
@@ -321,13 +324,16 @@ export const getProductByDate = async ({ user, date }) => {
       expiryDate: { $gte: today, $lt: date },
     })
     .catch((err) => (error = err));
+  console.log(products);
   for (const cat of products) {
-    const command = new GetObjectCommand({
-      Bucket: process.env.SOURCE_BUCKET,
-      Key: cat.image,
-    });
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-    cat.image = url;
+    if (cat.image) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
+    }
   }
   if (products && !error) {
     return {
