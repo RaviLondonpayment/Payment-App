@@ -25,6 +25,7 @@ export const createCategory = async (
 
     await s3Client.send(command).catch((err) => console.log(err));
   }
+  console.log(file, "lol");
 
   let id = new mongoose.Types.ObjectId(user);
   // console.log("lol", categoryName, categoryDescription, colorCode, user);
@@ -104,8 +105,10 @@ export const updateCategory = async (
       Body: file.buffer,
       ContentType: file.mimetype,
     });
+    console.log(file, "lol");
     await s3Client.send(command).catch((err) => console.log(err));
   }
+  console.log(file, "lol");
   // console.log(objId, "lol", id, categoryName, categoryDescription, colorCode);
   const category = await categoryModel.findByIdAndUpdate(
     { _id: objId },
@@ -137,20 +140,20 @@ export const getCategoryByCustomer = async ({ user }) => {
   // console.log("getbycustomer");
   let objId = mongoose.Types.ObjectId(user);
   const category = await categoryModel.find({ user: objId });
-  if (category.image) {
-    for (const cat of category) {
-      // console.log("value", cat);
-      if (cat.image) {
-        cat.imageNumber = cat.image;
-        const command = new GetObjectCommand({
-          Bucket: process.env.SOURCE_BUCKET,
-          Key: cat.image,
-        });
-        const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-        cat.image = url;
-      }
+  // if (category.image) {
+  for (const cat of category) {
+    // console.log("value", cat);
+    if (cat.image) {
+      cat.imageNumber = cat.image;
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
     }
   }
+  // }
   if (category) {
     return {
       success: true,

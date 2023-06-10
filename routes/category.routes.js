@@ -17,7 +17,6 @@ router.post(
   "/create",
   upload.single("image"),
   verifyUser,
-
   createCategoryController
 );
 
