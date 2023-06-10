@@ -350,14 +350,14 @@ export const getProductByBarCode = async ({ barCode }) => {
   const product = await productModel
     .findOne({ barCode })
     .catch((err) => (error = err));
-  for (const cat of product) {
-    const command = new GetObjectCommand({
-      Bucket: process.env.SOURCE_BUCKET,
-      Key: cat.image,
-    });
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-    cat.image = url;
-  }
+  // for (const cat of product) {
+  const command = new GetObjectCommand({
+    Bucket: process.env.SOURCE_BUCKET,
+    Key: product.image,
+  });
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+  product.image = url;
+  // }
   if (product) {
     return {
       success: true,
