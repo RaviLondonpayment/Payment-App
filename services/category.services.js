@@ -140,13 +140,15 @@ export const getCategoryByCustomer = async ({ user }) => {
   if (category.image) {
     for (const cat of category) {
       // console.log("value", cat);
-      cat.imageNumber = cat.image;
-      const command = new GetObjectCommand({
-        Bucket: process.env.SOURCE_BUCKET,
-        Key: cat.image,
-      });
-      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-      cat.image = url;
+      if (cat.image) {
+        cat.imageNumber = cat.image;
+        const command = new GetObjectCommand({
+          Bucket: process.env.SOURCE_BUCKET,
+          Key: cat.image,
+        });
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+        cat.image = url;
+      }
     }
   }
   if (category) {

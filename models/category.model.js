@@ -24,6 +24,9 @@ const categorySchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
+  imageNumber: {
+    type: String,
+  },
 });
 
 export default mongoose.model("category", categorySchema);
