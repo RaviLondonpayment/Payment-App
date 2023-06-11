@@ -192,15 +192,25 @@ export const getCount = async ({ user }) => {
 };
 
 //delete category
-// export const deleteCategory = async (id) => {
-//   const category = await categoryModel.deleteOne({ _id: id });
-//   if (category) {
-//     return {
-//       success: true,
-//       status: 200,
-//       message: "Category deleted",
-//     };
-//   } else {
-//     return { success: false, status: 404, message: "Category unavailable" };
-//   }
-// };
+export const deleteCategory = async ({ id }) => {
+  const objId = mongoose.Types.ObjectId(id);
+  const product = await productModel.find({ category: objId });
+  console.log(product);
+  if (product.length) {
+    return {
+      success: false,
+      status: 403,
+      message: "Please remove all the products present in the category",
+    };
+  }
+  const category = await categoryModel.deleteOne({ _id: id });
+  if (category) {
+    return {
+      success: true,
+      status: 200,
+      message: "Category deleted",
+    };
+  } else {
+    return { success: false, status: 404, message: "Category unavailable" };
+  }
+};

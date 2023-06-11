@@ -1,5 +1,6 @@
 import {
   createCategory,
+  deleteCategory,
   getCategoryByCustomer,
   getCategoryById,
   getCount,
@@ -30,4 +31,9 @@ export const updateCategoryByIdController = async (req, res) => {
 export const getCountController = async (req, res) => {
   const getCountService = await getCount(req.body);
   return res.json(getCountService);
+};
+
+export const deleteCategoryController = async (req, res) => {
+  const deleteCategoryService = await deleteCategory(req.body);
+  return res.json(deleteCategoryService);
 };

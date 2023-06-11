@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createCategoryController,
+  deleteCategoryController,
   getCategoryByCustomerController,
   getCategoryByIdController,
   getCountController,
@@ -35,6 +36,6 @@ router.post("/getcount", verifyUser, getCountController);
 
 // router.get("/update")
 
-// router.delete("/categories/delete");
+router.post("/delete", verifyUser, deleteCategoryController);
 
 export { router };
