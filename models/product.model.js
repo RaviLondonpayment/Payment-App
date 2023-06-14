@@ -50,6 +50,9 @@ const productSchema = new Schema({
   imageNumber: {
     type: String,
   },
+  expiresIn: {
+    type: Number,
+  },
 });
 
 export default mongoose.model("product", productSchema);

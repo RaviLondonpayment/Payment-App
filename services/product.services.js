@@ -42,6 +42,8 @@ export const createProduct = async (
 
     await s3Client.send(command).catch((err) => console.log(err));
   }
+  let mfdDate = new Date(manufacturingDate);
+  let expDate = new Date(expiryDate);
   let userid = mongoose.Types.ObjectId(user);
   let category = mongoose.Types.ObjectId(categoryid);
   let canvas = createCanvas();
@@ -58,10 +60,10 @@ export const createProduct = async (
     productName: productName,
     category: category,
     quantity: quantity,
-    manufacturingDate: manufacturingDate,
+    manufacturingDate: mfdDate,
     kilogram: kilogram,
     price: price,
-    expiryDate: expiryDate,
+    expiryDate: expDate,
     user: userid,
     description: description,
     offer: offer,
@@ -91,7 +93,7 @@ export const getAllProduct = async () => {
 //get product by customer
 export const getProductByCustomer = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
-  console.log(user, userid);
+  //console.log(user, userid);
   const products = await productModel.find({ user: userid });
   for (const cat of products) {
     if (cat.image) {
@@ -315,16 +317,17 @@ export const getProductByDate = async ({ user, date }) => {
   let userid = mongoose.Types.ObjectId(user);
   // const expiry = new Date().toLocaleDateString("en-GB");
   const today = new Date();
-  console.log("date", today, date);
+  let expiry = new Date(date);
+  //console.log("date", today, expiry, userid);
   // console.log(date, today, "date");
   let error = "";
   const products = await productModel
     .find({
       user: userid,
-      expiryDate: { $gte: today, $lt: date },
+      expiryDate: { $gte: today, $lt: expiry },
     })
     .catch((err) => (error = err));
-  console.log(products);
+  // console.log(products);
   for (const cat of products) {
     if (cat.image) {
       const command = new GetObjectCommand({
@@ -334,6 +337,13 @@ export const getProductByDate = async ({ user, date }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    let expiredate = new Date(cat.expiryDate);
+    cat.expiresIn = Math.ceil(
+      (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+    );
+    // console.log(
+    //   Math.ceil((expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24))
+    // );
   }
   if (products && !error) {
     return {
