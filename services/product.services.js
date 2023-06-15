@@ -42,8 +42,14 @@ export const createProduct = async (
 
     await s3Client.send(command).catch((err) => console.log(err));
   }
-  let mfdDate = new Date(manufacturingDate);
-  let expDate = new Date(expiryDate);
+  let mfdDate = "";
+  let expDate = "";
+  if (manufacturingDate) {
+    mfdDate = new Date(manufacturingDate);
+  }
+  if (expiryDate) {
+    expDate = new Date(expiryDate);
+  }
   let userid = mongoose.Types.ObjectId(user);
   let category = mongoose.Types.ObjectId(categoryid);
   let canvas = createCanvas();
@@ -202,6 +208,14 @@ export const updateProduct = async (
   file
 ) => {
   let uniqueName = "";
+  let mfdDate = "";
+  let expDate = "";
+  if (manufacturingDate) {
+    mfdDate = new Date(manufacturingDate);
+  }
+  if (expiryDate) {
+    expDate = new Date(expiryDate);
+  }
   let offerValue = calculation(offer, price);
   if (file && file.buffer) {
     uniqueName = crypto.randomBytes(32).toString("hex");
@@ -230,10 +244,10 @@ export const updateProduct = async (
         categoryid: categoryid,
         quantity: quantity,
         image: uniqueName,
-        manufacturingDate: manufacturingDate,
+        manufacturingDate: mfdDate,
         kilogram: kilogram,
         price: price,
-        expiryDate: expiryDate,
+        expiryDate: expDate,
         user: userid,
         description: description,
         offerPrice: offerValue,
