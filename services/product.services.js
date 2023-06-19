@@ -236,7 +236,7 @@ export const updateProduct = async (
     uniqueName = imageNumber;
   }
   let productid = mongoose.Types.ObjectId(id);
-  let categoryid = mongoose.Types.ObjectId(category);
+  let category = mongoose.Types.ObjectId(categoryid);
   let userid = mongoose.Types.ObjectId(user);
   // let offerValue = calculation(offer, price);
 
@@ -245,7 +245,7 @@ export const updateProduct = async (
       { _id: productid },
       {
         productName: productName,
-        categoryid: categoryid,
+        categoryid: category,
         quantity: quantity,
         image: uniqueName,
         manufacturingDate: mfdDate,
