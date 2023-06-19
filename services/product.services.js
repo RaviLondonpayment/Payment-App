@@ -193,8 +193,8 @@ export const getProductByCategoryId = async ({ category }) => {
 export const updateProduct = async (
   {
     id,
-    name,
-    category,
+    productName,
+    categoryid,
     user,
     quantity,
     manufacturingDate,
@@ -218,7 +218,7 @@ export const updateProduct = async (
     expDate = new Date(expiryDate);
   }
   let offerValue = calculation(offer, price);
-  console.log(file);
+  console.log();
   if (file && file.buffer) {
     console.log("perfect");
     uniqueName = crypto.randomBytes(32).toString("hex");
@@ -244,7 +244,7 @@ export const updateProduct = async (
     .findByIdAndUpdate(
       { _id: productid },
       {
-        productName: name,
+        productName: productName,
         categoryid: categoryid,
         quantity: quantity,
         image: uniqueName,
