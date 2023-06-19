@@ -105,10 +105,10 @@ export const updateCategory = async (
       Body: file.buffer,
       ContentType: file.mimetype,
     });
-    console.log(file, "lol");
+    // console.log(file, "lol");
     await s3Client.send(command).catch((err) => console.log(err));
   }
-  console.log(file, "lol");
+  // console.log(file, "lol");
   // console.log(objId, "lol", id, categoryName, categoryDescription, colorCode);
   const category = await categoryModel.findByIdAndUpdate(
     { _id: objId },

@@ -30,6 +30,7 @@ export const createProduct = async (
   file
 ) => {
   let uniqueName = "";
+  console.log(file, "crte");
   if (file && file.buffer) {
     uniqueName = crypto.randomBytes(32).toString("hex");
     // console.log(file, process.env.REGION);
@@ -217,7 +218,9 @@ export const updateProduct = async (
     expDate = new Date(expiryDate);
   }
   let offerValue = calculation(offer, price);
+  console.log(file);
   if (file && file.buffer) {
+    console.log("perfect");
     uniqueName = crypto.randomBytes(32).toString("hex");
     // console.log(file, process.env.REGION);
     const command = new PutObjectCommand({
@@ -229,6 +232,7 @@ export const updateProduct = async (
 
     await s3Client.send(command).catch((err) => console.log(err));
   } else {
+    console.log("not perfect");
     uniqueName = imageNumber;
   }
   let productid = mongoose.Types.ObjectId(id);
@@ -258,11 +262,27 @@ export const updateProduct = async (
     .catch((err) => console.log(err, "lol"));
   const all = await productModel.find({ user: userid });
   if (products) {
+    if (all) {
+      for (const cat of all) {
+        if (cat.image) {
+          // let prod=cat
+          cat.imageNumber = cat.image;
+          const command = new GetObjectCommand({
+            Bucket: process.env.SOURCE_BUCKET,
+            Key: cat.image,
+          });
+          const url = await getSignedUrl(s3Client, command, {
+            expiresIn: 36000,
+          });
+          cat.image = url;
+        }
+      }
+    }
     return {
       success: true,
       status: 200,
       data: products,
-      allProduct: all,
+      allProduct: all ? all : "",
     };
   } else {
     return {
@@ -381,14 +401,17 @@ export const getProductByBarCode = async ({ barCode }) => {
     .findOne({ barCode })
     .catch((err) => (error = err));
   // for (const cat of product) {
-  const command = new GetObjectCommand({
-    Bucket: process.env.SOURCE_BUCKET,
-    Key: product.image,
-  });
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-  product.image = url;
+
   // }
   if (product) {
+    if (product.image) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: product.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      product.image = url;
+    }
     return {
       success: true,
       status: 200,
