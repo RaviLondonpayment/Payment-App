@@ -361,29 +361,42 @@ export const getProductByDate = async ({ user, date }) => {
       expiryDate: { $gte: today, $lt: expiry },
     })
     .catch((err) => (error = err));
+
+  const expired = await productModel
+    .find({
+      user: userid,
+      expiryDate: { $lt: today },
+    })
+    .catch((err) => console.log(err));
   // console.log(products);
-  for (const cat of products) {
-    if (cat.image) {
-      const command = new GetObjectCommand({
-        Bucket: process.env.SOURCE_BUCKET,
-        Key: cat.image,
-      });
-      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-      cat.image = url;
-    }
-    let expiredate = new Date(cat.expiryDate);
-    cat.expiresIn = Math.ceil(
-      (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
-    );
-    // console.log(
-    //   Math.ceil((expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24))
-    // );
-  }
+
   if (products && !error) {
+    for (const cat of products) {
+      if (cat.image) {
+        const command = new GetObjectCommand({
+          Bucket: process.env.SOURCE_BUCKET,
+          Key: cat.image,
+        });
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+        cat.image = url;
+      }
+      let expiredate = new Date(cat.expiryDate);
+      cat.expiresIn = Math.ceil(
+        (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+      );
+      // console.log(
+      //   Math.ceil((expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24))
+      // );
+    }
+    products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+    for (const exp of expired) {
+      exp.expiresIn = 0;
+    }
     return {
       success: true,
       status: 200,
       data: products,
+      expired: expired,
     };
   } else {
     return {
