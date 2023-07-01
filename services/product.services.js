@@ -166,6 +166,7 @@ export const getProductByCategoryId = async ({ category }) => {
   const products = await productModel.find({ category: categoryid });
   for (const cat of products) {
     if (cat.image) {
+      cat.imageNumber = cat.image;
       const command = new GetObjectCommand({
         Bucket: process.env.SOURCE_BUCKET,
         Key: cat.image,
@@ -390,7 +391,16 @@ export const getProductByDate = async ({ user, date }) => {
     }
     products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
     for (const exp of expired) {
+      exp.imageNumber = exp.image;
       exp.expiresIn = 0;
+      if (exp.image) {
+        const command = new GetObjectCommand({
+          Bucket: process.env.SOURCE_BUCKET,
+          Key: exp.image,
+        });
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+        exp.image = url;
+      }
     }
     return {
       success: true,
