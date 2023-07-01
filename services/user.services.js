@@ -18,7 +18,7 @@ export const getUser = async ({ user }) => {
       users.imageNumber = users.image;
       const command = new GetObjectCommand({
         Bucket: process.env.SOURCE_BUCKET,
-        Key: category.image,
+        Key: users.image,
       });
 
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
