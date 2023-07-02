@@ -219,7 +219,7 @@ export const updateProduct = async (
     expDate = new Date(expiryDate);
   }
   let offerValue = calculation(offer, price);
-  console.log();
+  console.log(categoryid, "catid");
   if (file && file.buffer) {
     console.log("perfect");
     uniqueName = crypto.randomBytes(32).toString("hex");
@@ -246,7 +246,7 @@ export const updateProduct = async (
       { _id: productid },
       {
         productName: productName,
-        categoryid: category,
+        category: category,
         quantity: quantity,
         image: uniqueName,
         manufacturingDate: mfdDate,
