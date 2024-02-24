@@ -31,6 +31,8 @@ router.post(
   updateProductController
 );
 
+router.post("/updateprice", updateProductController);
+
 router.post("/getbyid", verifyUser, getProductByIdController);
 
 router.post("/getbycategory", verifyUser, getProductByCategoryController);
