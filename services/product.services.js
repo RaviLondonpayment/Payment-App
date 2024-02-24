@@ -298,7 +298,7 @@ export const updateProduct = async (
 export const updateProductPrice = async ({ id, price, barCode }) => {
   let userid = mongoose.Types.ObjectId(id);
   const products = await productModel
-    .findByIdAndUpdate(
+    .findOneAndUpdate(
       { barCode: barCode, user: userid },
       {
         price: price,
