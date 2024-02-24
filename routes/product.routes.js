@@ -9,6 +9,7 @@ import {
   getProductByIdController,
   getProductByOfferPriceController,
   updateProductController,
+  updateProductPriceController,
 } from "../controller/product.controllers.js";
 import { verifyUser } from "../verification/verification.js";
 import multer from "multer";
@@ -30,6 +31,8 @@ router.post(
   verifyUser,
   updateProductController
 );
+
+router.post("/updateprice", updateProductPriceController);
 
 router.post("/getbyid", verifyUser, getProductByIdController);
 

@@ -30,7 +30,7 @@ export const createProduct = async (
   file
 ) => {
   let uniqueName = "";
-  console.log(file, "crte");
+  // console.log(file, "crte");
   if (file && file.buffer) {
     uniqueName = crypto.randomBytes(32).toString("hex");
     // console.log(file, process.env.REGION);
@@ -219,9 +219,9 @@ export const updateProduct = async (
     expDate = new Date(expiryDate);
   }
   let offerValue = calculation(offer, price);
-  console.log(categoryid, "catid");
+  // console.log(categoryid, "catid");
   if (file && file.buffer) {
-    console.log("perfect");
+    // console.log("perfect");
     uniqueName = crypto.randomBytes(32).toString("hex");
     // console.log(file, process.env.REGION);
     const command = new PutObjectCommand({
@@ -233,7 +233,7 @@ export const updateProduct = async (
 
     await s3Client.send(command).catch((err) => console.log(err));
   } else {
-    console.log("not perfect");
+    // console.log("not perfect");
     uniqueName = imageNumber;
   }
   let productid = mongoose.Types.ObjectId(id);
@@ -284,6 +284,33 @@ export const updateProduct = async (
       status: 200,
       data: products,
       allProduct: all ? all : "",
+    };
+  } else {
+    return {
+      success: false,
+      status: 404,
+      message: "Product unavailable",
+    };
+  }
+};
+
+//update product price
+export const updateProductPrice = async ({ id, price, barCode }) => {
+  let userid = mongoose.Types.ObjectId(id);
+  const products = await productModel
+    .findOneAndUpdate(
+      { barCode: barCode, user: userid },
+      {
+        price: price,
+      }
+    )
+    .catch((err) => console.log(err, "lol"));
+
+  if (products) {
+    return {
+      success: true,
+      status: 200,
+      message: "Product Price updated successfully",
     };
   } else {
     return {
@@ -390,6 +417,9 @@ export const getProductByDate = async ({ user, date }) => {
       // );
     }
     products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+    if (expired) {
+      expired.sort((a, b) => new Date(b.expiryDate) - new Date(a.expiryDate));
+    }
     for (const exp of expired) {
       exp.imageNumber = exp.image;
       exp.expiresIn = 0;

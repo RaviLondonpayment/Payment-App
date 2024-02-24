@@ -8,6 +8,7 @@ import {
   getProductByCategoryId,
   getproductbyofferprice,
   getProductByBarCode,
+  updateProductPrice,
 } from "../services/product.services.js";
 
 export const createProductController = async (req, res, next) => {
@@ -27,6 +28,11 @@ export const getProductByIdController = async (req, res, next) => {
 
 export const updateProductController = async (req, res, next) => {
   const getProductService = await updateProduct(req.body, req.file);
+  return res.json(getProductService);
+};
+
+export const updateProductPriceController = async (req, res, next) => {
+  const getProductService = await updateProductPrice(req.body);
   return res.json(getProductService);
 };
 
