@@ -115,6 +115,7 @@ export const getProductByCustomer = async ({ user }) => {
     }
   }
   if (products) {
+    products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
     return {
       success: true,
       status: 200,
@@ -374,6 +375,7 @@ export const getproductbyofferprice = async ({ user, offer }) => {
     };
   }
 };
+
 //getproductbydate
 export const getProductByDate = async ({ user, date }) => {
   let userid = mongoose.Types.ObjectId(user);
