@@ -9,6 +9,7 @@ import {
   getproductbyofferprice,
   getProductByBarCode,
   updateProductPrice,
+  getProductByExpiryDate,
 } from "../services/product.services.js";
 
 export const createProductController = async (req, res, next) => {
@@ -59,4 +60,9 @@ export const getProductByOfferPriceController = async (req, res) => {
 export const getProductByBarcodeController = async (req, res) => {
   const getProductByBarcodeService = await getProductByBarCode(req.body);
   return res.json(getProductByBarcodeService);
+};
+
+export const getProductByExpiryDateController = async (req, res) => {
+  const getProductByExpiryDateService = await getProductByExpiryDate(req.body);
+  return res.json(getProductByExpiryDateService);
 };
