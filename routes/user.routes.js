@@ -6,7 +6,7 @@ import {
   updateUserController,
   updateUserSubscriptionController,
 } from "../controller/user.controllers.js";
-import { verifyUser } from "../verification/verification.js";
+import { verifyUser, verifyUserVtwo } from "../verification/verification.js";
 import multer from "multer";
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -28,7 +28,7 @@ router.post("/getuserbyname", verifyUser, getUserByNameController);
 
 router.post(
   "/updateusersubscription",
-  verifyUser,
+  verifyUserVtwo,
   updateUserSubscriptionController
 );
 

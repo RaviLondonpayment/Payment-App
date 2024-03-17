@@ -105,6 +105,7 @@ export const login = async ({ email, password }) => {
         tokenid: data._id,
         username: user.ownerName,
         name: user.name,
+        userRole: user.userRole,
       };
     } else {
       return {
