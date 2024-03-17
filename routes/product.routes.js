@@ -6,6 +6,7 @@ import {
   getProductByCategoryController,
   getProductByCustomerController,
   getProductByDateController,
+  getProductByExpiryDateAndCategoryController,
   getProductByExpiryDateController,
   getProductByIdController,
   getProductByOfferPriceController,
@@ -51,6 +52,12 @@ router.post(
   "/getProductByExpiryDate",
   verifyUser,
   getProductByExpiryDateController
+);
+
+router.post(
+  "/getProductByExpiryDateAndCategory",
+  verifyUser,
+  getProductByExpiryDateAndCategoryController
 );
 
 router.post("/delete", verifyUser, deleteProductController);

@@ -514,3 +514,40 @@ export const getProductByExpiryDate = async ({ user }) => {
     };
   }
 };
+
+//getProductbyExpiryDateAndCategory
+export const getProductbyExpiryDateAndCategory = async ({ user, category }) => {
+  let userid = mongoose.Types.ObjectId(user);
+  //console.log(user, userid);
+  const products = await productModel.find({
+    user: userid,
+    category: category,
+  });
+  for (const cat of products) {
+    if (cat.image) {
+      // let prod=cat
+      cat.imageNumber = cat.image;
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
+    }
+  }
+  if (products) {
+    let expiryDate = products.filter((product) => product.expiryDate);
+    expiryDate.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+    return {
+      success: true,
+      status: 200,
+      data: expiryDate,
+    };
+  } else {
+    return {
+      success: false,
+      status: 400,
+      message: "No data",
+    };
+  }
+};

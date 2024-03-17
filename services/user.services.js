@@ -143,13 +143,10 @@ export const getAllUser = async () => {
 //getUserByName
 export const getUserByName = async ({ name }) => {
   let error = "";
-  let users = await userModel
-    .find({ name: name })
+  const users = await userModel
+    .find({ name: { $regex: name, $options: "i" } })
     .catch((err) => (error = err));
-  const owner = await userModel
-    .find({ ownerName: name })
-    .catch((err) => (error = err));
-  users = [...users, ...owner];
+
   if (users) {
     if (users.image) {
       users.imageNumber = users.image;

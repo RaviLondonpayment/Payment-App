@@ -35,6 +35,9 @@ const userSchema = new Schema({
   image: {
     type: String,
   },
+  userRole: {
+    type: String,
+  },
 });
 
 userSchema.pre("save", async function (next) {
