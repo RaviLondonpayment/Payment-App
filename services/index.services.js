@@ -30,6 +30,7 @@ export const signup = async (payload) => {
     ownerName: payload.ownerName,
     shopAddress: payload.shopAddress,
     country: payload.country,
+    subscribed: true,
   });
 
   // const token = sign({ id: user._id }, process.env.JWT_SECRET);

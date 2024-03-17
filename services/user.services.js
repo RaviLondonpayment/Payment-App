@@ -100,5 +100,123 @@ export const updateUser = async (payload, file) => {
   }
 };
 
+//getAllUsers
+export const getAllUser = async () => {
+  let error = "";
+  const users = await userModel.find().catch((err) => (error = err));
+  if (users) {
+    for (const cat of users) {
+      if (cat.image) {
+        cat.imageNumber = cat.image;
+        const command = new GetObjectCommand({
+          Bucket: process.env.SOURCE_BUCKET,
+          Key: cat.image,
+        });
+
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+
+        users.image = url;
+      }
+    }
+    return {
+      success: true,
+      status: 200,
+      data: users,
+    };
+  } else {
+    if (error) {
+      return {
+        success: false,
+        status: 400,
+        error: error,
+      };
+    } else {
+      return {
+        success: false,
+        status: 404,
+        message: "Not found",
+      };
+    }
+  }
+};
+
+//getUserByName
+export const getUserByName = async ({ name }) => {
+  let error = "";
+  let users = await userModel
+    .find({ name: name })
+    .catch((err) => (error = err));
+  const owner = await userModel
+    .find({ ownerName: name })
+    .catch((err) => (error = err));
+  users = [...users, ...owner];
+  if (users) {
+    if (users.image) {
+      users.imageNumber = users.image;
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: users.image,
+      });
+
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+
+      users.image = url;
+    }
+    return {
+      success: true,
+      status: 200,
+      data: users,
+    };
+  } else {
+    if (error) {
+      return {
+        success: false,
+        status: 400,
+        error: error,
+      };
+    } else {
+      return {
+        success: false,
+        status: 404,
+        message: "Not found",
+      };
+    }
+  }
+};
+
+//updateUserSubscription
+export const updateUserSubscription = async ({ user, subscribed }) => {
+  let userid = mongoose.Types.ObjectId(user);
+  let error = "";
+  const userres = await userModel
+    .findByIdAndUpdate(
+      { _id: userid },
+      {
+        subscribed: subscribed,
+      }
+    )
+    .catch((err) => (error = err));
+  if (userres) {
+    return {
+      success: true,
+      status: 200,
+      data: userres,
+    };
+  } else {
+    if (error) {
+      return {
+        success: false,
+        status: 400,
+        error: error,
+      };
+    } else {
+      return {
+        success: false,
+        status: 404,
+        message: "Not found",
+      };
+    }
+  }
+};
 //deleteuser
 export const deleteuser = (id) => {};
