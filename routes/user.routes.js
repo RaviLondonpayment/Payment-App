@@ -1,7 +1,10 @@
 import express from "express";
 import {
+  getAllUserController,
+  getUserByNameController,
   getUserController,
   updateUserController,
+  updateUserSubscriptionController,
 } from "../controller/user.controllers.js";
 import { verifyUser } from "../verification/verification.js";
 import multer from "multer";
@@ -17,6 +20,16 @@ router.post(
   upload.single("image"),
   verifyUser,
   updateUserController
+);
+
+router.post("/getalluser", verifyUser, getAllUserController);
+
+router.post("/getuserbyname", verifyUser, getUserByNameController);
+
+router.post(
+  "/updateusersubscription",
+  verifyUser,
+  updateUserSubscriptionController
 );
 
 export { router };
