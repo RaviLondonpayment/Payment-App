@@ -31,6 +31,7 @@ export const signup = async (payload) => {
     shopAddress: payload.shopAddress,
     country: payload.country,
     subscribed: true,
+    userRole: "User",
   });
 
   // const token = sign({ id: user._id }, process.env.JWT_SECRET);
@@ -75,6 +76,7 @@ export const signup = async (payload) => {
     ownerName: user.ownerName,
     shopAddress: user.shopAddress,
     country: user.country,
+    userRole: user.userRole,
     // password: passwordGenerator,
   };
 };
