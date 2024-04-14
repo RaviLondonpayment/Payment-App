@@ -113,6 +113,9 @@ export const getProductByCustomer = async ({ user }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    cat.expiresIn = Math.ceil(
+      (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+    );
   }
   if (products) {
     products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
@@ -234,7 +237,7 @@ export const updateProduct = async (
 
     await s3Client.send(command).catch((err) => console.log(err));
   } else {
-    // console.log("not perfect");
+    console.log("not perfect", imageNumber);
     uniqueName = imageNumber;
   }
   let productid = mongoose.Types.ObjectId(id);
@@ -497,6 +500,9 @@ export const getProductByExpiryDate = async ({ user }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    cat.expiresIn = Math.ceil(
+      (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+    );
   }
   if (products) {
     let expiryDate = products.filter((product) => product.expiryDate);
@@ -534,6 +540,9 @@ export const getProductbyExpiryDateAndCategory = async ({ user, category }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    cat.expiresIn = Math.ceil(
+      (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+    );
   }
   if (products) {
     let expiryDate = products.filter((product) => product.expiryDate);
