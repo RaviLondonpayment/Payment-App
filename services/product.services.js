@@ -100,6 +100,7 @@ export const getAllProduct = async () => {
 //get product by customer
 export const getProductByCustomer = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
+  const today = new Date();
   //console.log(user, userid);
   const products = await productModel.find({ user: userid });
   for (const cat of products) {
@@ -113,6 +114,7 @@ export const getProductByCustomer = async ({ user }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    let expiredate = new Date(cat.expiryDate);
     cat.expiresIn = Math.ceil(
       (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
     );
@@ -487,6 +489,7 @@ export const getProductByBarCode = async ({ barCode }) => {
 //getProductbyExpiryDate
 export const getProductByExpiryDate = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
+  const today = new Date();
   //console.log(user, userid);
   const products = await productModel.find({ user: userid });
   for (const cat of products) {
@@ -500,6 +503,7 @@ export const getProductByExpiryDate = async ({ user }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    let expiredate = new Date(cat.expiryDate);
     cat.expiresIn = Math.ceil(
       (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
     );
@@ -524,6 +528,7 @@ export const getProductByExpiryDate = async ({ user }) => {
 //getProductbyExpiryDateAndCategory
 export const getProductbyExpiryDateAndCategory = async ({ user, category }) => {
   let userid = mongoose.Types.ObjectId(user);
+  const today = new Date();
   //console.log(user, userid);
   const products = await productModel.find({
     user: userid,
@@ -540,6 +545,7 @@ export const getProductbyExpiryDateAndCategory = async ({ user, category }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    let expiredate = new Date(cat.expiryDate);
     cat.expiresIn = Math.ceil(
       (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
     );
