@@ -425,7 +425,7 @@ export const getProductByDate = async ({ user, date }) => {
     }
     products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
     if (expired) {
-      expired.sort((a, b) => new Date(b.expiryDate) - new Date(a.expiryDate));
+      expired.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
     }
     for (const exp of expired) {
       exp.imageNumber = exp.image;
