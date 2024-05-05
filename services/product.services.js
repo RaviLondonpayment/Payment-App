@@ -425,7 +425,7 @@ export const getProductByDate = async ({ user, date }) => {
     }
     products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
     if (expired) {
-      expired.sort((a, b) => new Date(b.expiryDate) - new Date(a.expiryDate));
+      expired.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
     }
     for (const exp of expired) {
       exp.imageNumber = exp.image;
@@ -534,6 +534,45 @@ export const getProductbyExpiryDateAndCategory = async ({ user, category }) => {
     user: userid,
     category: category,
   });
+  for (const cat of products) {
+    if (cat.image) {
+      // let prod=cat
+      cat.imageNumber = cat.image;
+      const command = new GetObjectCommand({
+        Bucket: process.env.SOURCE_BUCKET,
+        Key: cat.image,
+      });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+      cat.image = url;
+    }
+    let expiredate = new Date(cat.expiryDate);
+    cat.expiresIn = Math.ceil(
+      (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+    );
+  }
+  if (products) {
+    let expiryDate = products.filter((product) => product.expiryDate);
+    expiryDate.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+    return {
+      success: true,
+      status: 200,
+      data: expiryDate,
+    };
+  } else {
+    return {
+      success: false,
+      status: 400,
+      message: "No data",
+    };
+  }
+};
+
+//getProductSortExpired
+export const getProductSortExpired = async ({ user }) => {
+  let userid = mongoose.Types.ObjectId(user);
+  const today = new Date();
+  //console.log(user, userid);
+  const products = await productModel.find({ user: userid });
   for (const cat of products) {
     if (cat.image) {
       // let prod=cat

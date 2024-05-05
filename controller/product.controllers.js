@@ -11,6 +11,7 @@ import {
   updateProductPrice,
   getProductByExpiryDate,
   getProductbyExpiryDateAndCategory,
+  getProductSortExpired,
 } from "../services/product.services.js";
 
 export const createProductController = async (req, res, next) => {
@@ -73,4 +74,9 @@ export const getProductByExpiryDateAndCategoryController = async (req, res) => {
     req.body
   );
   return res.json(getProductByExpiryDateService);
+};
+
+export const getProductSortExpiredController = async (req, res) => {
+  const getProductSortExpiredService = await getProductSortExpired(req.body);
+  return res.json(getProductSortExpiredService);
 };
