@@ -10,6 +10,7 @@ import {
   getProductByExpiryDateController,
   getProductByIdController,
   getProductByOfferPriceController,
+  getProductSortExpiredController,
   updateProductController,
   updateProductPriceController,
 } from "../controller/product.controllers.js";
@@ -61,5 +62,11 @@ router.post(
 );
 
 router.post("/delete", verifyUser, deleteProductController);
+
+router.post(
+  "/getProductSortExpired",
+  verifyUser,
+  getProductSortExpiredController
+);
 
 export { router };
