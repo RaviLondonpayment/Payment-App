@@ -86,7 +86,7 @@ export const createProduct = async (
   }
 };
 
-//getall products
+//get all products
 export const getAllProduct = async () => {
   const products = await productModel.find();
 
@@ -97,15 +97,17 @@ export const getAllProduct = async () => {
   };
 };
 
-//get product by customer
+//get product by customer-sort
 export const getProductByCustomer = async ({ user, skip = 20 }) => {
   let userid = mongoose.Types.ObjectId(user);
   const today = new Date();
   //console.log(user, userid);
   const products = await productModel
     .find({ user: userid })
+    .sort({ expiryDate: 1 })
     .limit(skip)
     .skip(skip > 20 ? skip - 20 : 0);
+
   for (const cat of products) {
     if (cat.image) {
       // let prod=cat
@@ -385,7 +387,7 @@ export const getproductbyofferprice = async ({ user, offer }) => {
   }
 };
 
-//getproductbydate
+//getproductbydate-sort
 export const getProductByDate = async ({ user, date, skip = 20 }) => {
   let userid = mongoose.Types.ObjectId(user);
   // const expiry = new Date().toLocaleDateString("en-GB");
@@ -399,6 +401,7 @@ export const getProductByDate = async ({ user, date, skip = 20 }) => {
       user: userid,
       expiryDate: { $gte: today, $lt: expiry },
     })
+    .sort({ expiryDate: 1 })
     .limit(skip)
     .skip(skip > 20 ? skip - 20 : 0)
     .catch((err) => (error = err));
@@ -495,13 +498,14 @@ export const getProductByBarCode = async ({ barCode }) => {
   }
 };
 
-//getProductbyExpiryDate
+//getProductbyExpiryDate-sort
 export const getProductByExpiryDate = async ({ user, skip = 20 }) => {
   let userid = mongoose.Types.ObjectId(user);
   const today = new Date();
   //console.log(user, userid);
   const products = await productModel
     .find({ user: userid })
+    .sort({ expiryDate: 1 })
     .limit(skip)
     .skip(skip > 20 ? skip - 20 : 0);
   for (const cat of products) {
@@ -538,7 +542,7 @@ export const getProductByExpiryDate = async ({ user, skip = 20 }) => {
   }
 };
 
-//getProductbyExpiryDateAndCategory
+//getProductbyExpiryDateAndCategory-sort
 export const getProductbyExpiryDateAndCategory = async ({ user, category }) => {
   let userid = mongoose.Types.ObjectId(user);
   const today = new Date();
@@ -580,7 +584,7 @@ export const getProductbyExpiryDateAndCategory = async ({ user, category }) => {
   }
 };
 
-//getProductSortExpired
+//getProductSortExpired-sort
 export const getProductSortExpired = async ({ user }) => {
   let userid = mongoose.Types.ObjectId(user);
   const today = new Date();
