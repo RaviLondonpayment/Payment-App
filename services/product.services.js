@@ -106,7 +106,7 @@ export const getProductByCustomer = async ({ user, skip = 0 }) => {
     .find({ user: userid })
     .sort({ expiryDate: 1 })
     .skip(skip * 20)
-    .limit(skip);
+    .limit(20);
   for (const cat of products) {
     if (cat.image) {
       // let prod=cat
@@ -403,7 +403,7 @@ export const getProductByDate = async ({ user, date, skip = 0 }) => {
     })
     .sort({ expiryDate: 1 })
     .skip(skip * 20)
-    .limit(skip)
+    .limit(20)
     .catch((err) => (error = err));
 
   const expired = await productModel
@@ -412,7 +412,7 @@ export const getProductByDate = async ({ user, date, skip = 0 }) => {
       expiryDate: { $lt: today },
     })
     .skip(skip * 20)
-    .limit(skip)
+    .limit(20)
     .sort({ expiryDate: 1 })
     .catch((err) => console.log(err));
   // console.log(products);
@@ -508,7 +508,7 @@ export const getProductByExpiryDate = async ({ user, skip = 0 }) => {
     .find({ user: userid, expiryDate: { $exists: true, $ne: null } })
     .sort({ expiryDate: 1 })
     .skip(skip * 20)
-    .limit(skip);
+    .limit(20);
 
   // console.log("pdts", products);
   for (const cat of products) {
