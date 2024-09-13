@@ -119,6 +119,7 @@ export const getProductByCustomer = async ({ user, skip = 20 }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
+    console.log(cat);
     let expiredate = new Date(cat.expiryDate);
     cat.expiresIn = Math.ceil(
       (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
@@ -412,6 +413,7 @@ export const getProductByDate = async ({ user, date, skip = 20 }) => {
       expiryDate: { $lt: today },
     })
     .limit(skip)
+    .sort({ expiryDate: 1 })
     .skip(skip > 20 ? skip - 20 : 0)
     .catch((err) => console.log(err));
   // console.log(products);
@@ -504,10 +506,11 @@ export const getProductByExpiryDate = async ({ user, skip = 20 }) => {
   const today = new Date();
   //console.log(user, userid);
   const products = await productModel
-    .find({ user: userid })
+    .find({ user: userid, expiryDate: { $exists: true, $ne: null } })
     .sort({ expiryDate: 1 })
     .limit(skip)
     .skip(skip > 20 ? skip - 20 : 0);
+  console.log("pdts", products);
   for (const cat of products) {
     if (cat.image) {
       // let prod=cat
@@ -527,6 +530,7 @@ export const getProductByExpiryDate = async ({ user, skip = 20 }) => {
   if (products) {
     let expiryDate = products.filter((product) => product.expiryDate);
     expiryDate.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+    console.log("exp", expiryDate);
     return {
       success: true,
       status: 200,
