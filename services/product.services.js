@@ -98,16 +98,15 @@ export const getAllProduct = async () => {
 };
 
 //get product by customer-sort
-export const getProductByCustomer = async ({ user, skip = 20 }) => {
+export const getProductByCustomer = async ({ user, skip = 0 }) => {
   let userid = mongoose.Types.ObjectId(user);
   const today = new Date();
   //console.log(user, userid);
   const products = await productModel
     .find({ user: userid })
     .sort({ expiryDate: 1 })
-    .limit(skip)
-    .skip(skip > 20 ? skip - 20 : 0);
-
+    .skip(skip * 20)
+    .limit(skip);
   for (const cat of products) {
     if (cat.image) {
       // let prod=cat
@@ -119,7 +118,7 @@ export const getProductByCustomer = async ({ user, skip = 20 }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       cat.image = url;
     }
-    console.log(cat);
+    // console.log(cat);
     let expiredate = new Date(cat.expiryDate);
     cat.expiresIn = Math.ceil(
       (expiredate.getTime() - today.getTime()) / (1000 * 3600 * 24)
@@ -131,7 +130,7 @@ export const getProductByCustomer = async ({ user, skip = 20 }) => {
       success: true,
       status: 200,
       data: products,
-      skip: skip + 20,
+      skip: skip + 1,
     };
   } else {
     return {
@@ -389,7 +388,7 @@ export const getproductbyofferprice = async ({ user, offer }) => {
 };
 
 //getproductbydate-sort
-export const getProductByDate = async ({ user, date, skip = 20 }) => {
+export const getProductByDate = async ({ user, date, skip = 0 }) => {
   let userid = mongoose.Types.ObjectId(user);
   // const expiry = new Date().toLocaleDateString("en-GB");
   const today = new Date();
@@ -403,8 +402,8 @@ export const getProductByDate = async ({ user, date, skip = 20 }) => {
       expiryDate: { $gte: today, $lt: expiry },
     })
     .sort({ expiryDate: 1 })
+    .skip(skip * 20)
     .limit(skip)
-    .skip(skip > 20 ? skip - 20 : 0)
     .catch((err) => (error = err));
 
   const expired = await productModel
@@ -412,9 +411,9 @@ export const getProductByDate = async ({ user, date, skip = 20 }) => {
       user: userid,
       expiryDate: { $lt: today },
     })
+    .skip(skip * 20)
     .limit(skip)
     .sort({ expiryDate: 1 })
-    .skip(skip > 20 ? skip - 20 : 0)
     .catch((err) => console.log(err));
   // console.log(products);
 
@@ -457,7 +456,7 @@ export const getProductByDate = async ({ user, date, skip = 20 }) => {
       status: 200,
       data: products,
       expired: expired,
-      skip: skip + 20,
+      skip: skip + 1,
     };
   } else {
     return {
@@ -501,16 +500,17 @@ export const getProductByBarCode = async ({ barCode }) => {
 };
 
 //getProductbyExpiryDate-sort
-export const getProductByExpiryDate = async ({ user, skip = 20 }) => {
+export const getProductByExpiryDate = async ({ user, skip = 0 }) => {
   let userid = mongoose.Types.ObjectId(user);
   const today = new Date();
   //console.log(user, userid);
   const products = await productModel
     .find({ user: userid, expiryDate: { $exists: true, $ne: null } })
     .sort({ expiryDate: 1 })
-    .limit(skip)
-    .skip(skip > 20 ? skip - 20 : 0);
-  console.log("pdts", products);
+    .skip(skip * 20)
+    .limit(skip);
+
+  // console.log("pdts", products);
   for (const cat of products) {
     if (cat.image) {
       // let prod=cat
@@ -530,12 +530,12 @@ export const getProductByExpiryDate = async ({ user, skip = 20 }) => {
   if (products) {
     let expiryDate = products.filter((product) => product.expiryDate);
     expiryDate.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
-    console.log("exp", expiryDate);
+    // console.log("exp", expiryDate);
     return {
       success: true,
       status: 200,
       data: expiryDate,
-      skip: skip + 20,
+      skip: skip + 1,
     };
   } else {
     return {
