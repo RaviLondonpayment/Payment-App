@@ -411,9 +411,10 @@ export const getProductByDate = async ({ user, date, skip = 0 }) => {
       user: userid,
       expiryDate: { $lt: today },
     })
+    .sort({ expiryDate: 1 })
     .skip(skip * 20)
     .limit(20)
-    .sort({ expiryDate: 1 })
+
     .catch((err) => console.log(err));
   // console.log(products);
 
