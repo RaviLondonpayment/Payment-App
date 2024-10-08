@@ -147,6 +147,7 @@ export const getProductById = async ({ id }) => {
   const products = await productModel.findById({ _id: user });
   let imageNumber = "";
   if (products.image) {
+    products.imageNumber = products.image;
     imageNumber = products.image;
     const command = new GetObjectCommand({
       Bucket: process.env.SOURCE_BUCKET,
