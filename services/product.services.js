@@ -480,6 +480,8 @@ export const getProductByBarCode = async ({ barCode }) => {
   // }
   if (product) {
     if (product.image) {
+      console.log(product.image, "img");
+      product.imageNumber = product.image;
       const command = new GetObjectCommand({
         Bucket: process.env.SOURCE_BUCKET,
         Key: product.image,
