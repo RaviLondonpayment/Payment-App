@@ -246,7 +246,7 @@ export const updateProduct = async (
 
     await s3Client.send(command).catch((err) => console.log(err));
   } else {
-    console.log("not perfect", imageNumber);
+    // console.log("not perfect", imageNumber);
     uniqueName = imageNumber;
   }
   let productid = mongoose.Types.ObjectId(id);
@@ -480,7 +480,6 @@ export const getProductByBarCode = async ({ barCode }) => {
   // }
   if (product) {
     if (product.image) {
-      console.log(product.image, "img");
       product.imageNumber = product.image;
       const command = new GetObjectCommand({
         Bucket: process.env.SOURCE_BUCKET,
