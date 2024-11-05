@@ -222,7 +222,11 @@ export const resetPassword = async (userId, token, password) => {
   );
 
   const user = await userModel.findById({ _id: userId });
-
+  try {
+    await tokenModel.deleteMany({ userId: userId });
+  } catch (err) {
+    console.log(error);
+  }
   // sendEmail(
   //   user.email,
   //   "Password Reset Successfully",
