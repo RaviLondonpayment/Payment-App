@@ -470,10 +470,12 @@ export const getProductByDate = async ({ user, date, skip = 0 }) => {
 };
 
 //getProductbybarcode
-export const getProductByBarCode = async ({ barCode }) => {
+export const getProductByBarCode = async ({ user, barCode }) => {
+  let userid = mongoose.Types.ObjectId(user);
   let error = "";
   const product = await productModel
-    .findOne({ barCode })
+    .findOne({ user: userid, barCode: barCode })
+    // .find({ user: userid, barCode: barCode })
     .catch((err) => (error = err));
   // for (const cat of product) {
 
@@ -488,6 +490,7 @@ export const getProductByBarCode = async ({ barCode }) => {
       const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
       product.image = url;
     }
+    console.log("product:", product);
     return {
       success: true,
       status: 200,
