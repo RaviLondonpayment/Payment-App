@@ -294,6 +294,10 @@ export const Accept = async ({ token }) => {
 export const Reject = async ({ token }) => {
   let decode = verify(token, JWTsecret);
   let user = await userModel.findOne({ email: decode.email });
+  console.log("user", user);
+  if (user.password) {
+    return { message: "accepted user cannot be rejected" };
+  }
   await sendEmail(
     user.email,
     "Reject Password",
@@ -326,14 +330,13 @@ export const signup = async (payload) => {
       country: payload.country,
       subscribed: true,
       userRole: "User",
-      password: "",
     });
 
     await user.save();
 
     let token = jwt.sign({ email: payload.email }, JWTsecret);
     await sendEmail(
-      "vigneshakshan@gmail.com",
+      process.env.OWNER_EMAIL,
       "Request mail",
       {
         name: user.name,
