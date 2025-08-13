@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <style>
+            /* Add your styles here for better button appearance */
+            .button-container {
+                margin-top: 20px;
+            }
+            .button-container button {
+                padding: 10px 20px;
+                margin-right: 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .accept-button {
+                background-color: #4CAF50; /* Green */
+                color: white;
+            }
+            .reject-button {
+                background-color: #f44336; /* Red */
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Hi Ravi,</p>
+        <p>The person: **{{name}}** has created an account and is requesting a password. You can choose to accept or reject the user's request.</p>
+        <div class="button-container">
+            <form action="{{accept}}" method="POST" style="display: inline-block;">
+                <button type="submit" class="accept-button">Accept</button>
+            </form>
+            <form action="{{reject}}" method="POST" style="display: inline-block;">
+                <button type="submit" class="reject-button">Reject</button>
+            </form>
+        </div>
+        <p>
+            You can also directly use these links if the buttons don't work:
+            <br>
+            Accept: <a href="{{accept}}">{{accept}}</a>
+            <br>
+            Reject: <a href="{{reject}}">{{reject}}</a>
+        </p>
+    </body>
+</html>
