@@ -11,75 +11,75 @@ const JWTsecret = process.env.JWT_SECRET;
 const bcryptSalt = process.env.BCRYPT_SALT;
 
 //signup
-export const signup = async (payload) => {
-  //console.log(payload, process.env.PASSWORD_KEY);
-  let user = await userModel.findOne({ email: payload.email });
-  if (user) {
-    return {
-      success: false,
-      status: 422,
-      message: "username already taken",
-    };
-  }
-  const passwordGenerator =
-    "@" + Math.floor(Math.random() * process.env.PASSWORD_KEY) + "lpa";
-  user = new userModel({
-    email: payload.email,
-    name: payload.name,
-    password: passwordGenerator,
-    ownerName: payload.ownerName,
-    shopAddress: payload.shopAddress,
-    country: payload.country,
-    subscribed: true,
-    userRole: "User",
-  });
+// export const signup = async (payload) => {
+//   //console.log(payload, process.env.PASSWORD_KEY);
+//   let user = await userModel.findOne({ email: payload.email });
+//   if (user) {
+//     return {
+//       success: false,
+//       status: 422,
+//       message: "username already taken",
+//     };
+//   }
+//   const passwordGenerator =
+//     "@" + Math.floor(Math.random() * process.env.PASSWORD_KEY) + "lpa";
+//   user = new userModel({
+//     email: payload.email,
+//     name: payload.name,
+//     password: passwordGenerator,
+//     ownerName: payload.ownerName,
+//     shopAddress: payload.shopAddress,
+//     country: payload.country,
+//     subscribed: true,
+//     userRole: "User",
+//   });
 
-  // const token = sign({ id: user._id }, process.env.JWT_SECRET);
-  // let resetToken = crypto.randomBytes(32).toString("hex");
-  // const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-  // await new tokenModel({
-  //   userId: user._id,
-  //   token: hash,
-  //   createdAt: Date.now(),
-  // }).save();
+//   // const token = sign({ id: user._id }, process.env.JWT_SECRET);
+//   // let resetToken = crypto.randomBytes(32).toString("hex");
+//   // const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+//   // await new tokenModel({
+//   //   userId: user._id,
+//   //   token: hash,
+//   //   createdAt: Date.now(),
+//   // }).save();
 
-  //   let resetToken = crypto.randomBytes(32).toString("hex");
-  //   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
-  //const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
+//   //   let resetToken = crypto.randomBytes(32).toString("hex");
+//   //   const hash = await bcrypt.hash(resetToken, Number(bcryptSalt));
+//   //const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
 
-  //console.log(user);
-  //await user.save({
-  // email: payload.email,
-  // name: payload.name,
-  //password: passwordGenerator,
-  // ownerName: payload.ownerName,
-  // shopAddress: payload.shopAddress,
-  // country: payload.country,
-  //});
-  user.save();
-  sendEmail(
-    user.email,
-    "Set password",
-    {
-      name: user.name,
-      //link: link,
-      password: passwordGenerator,
-    },
-    "./template/setPassword.handlebars"
-  );
-  return {
-    success: true,
-    status: 200,
-    userId: user._id,
-    email: user.email,
-    name: user.name,
-    ownerName: user.ownerName,
-    shopAddress: user.shopAddress,
-    country: user.country,
-    userRole: user.userRole,
-    // password: passwordGenerator,
-  };
-};
+//   //console.log(user);
+//   //await user.save({
+//   // email: payload.email,
+//   // name: payload.name,
+//   //password: passwordGenerator,
+//   // ownerName: payload.ownerName,
+//   // shopAddress: payload.shopAddress,
+//   // country: payload.country,
+//   //});
+//   user.save();
+//   sendEmail(
+//     user.email,
+//     "Set password",
+//     {
+//       name: user.name,
+//       //link: link,
+//       password: passwordGenerator,
+//     },
+//     "./template/setPassword.handlebars"
+//   );
+//   return {
+//     success: true,
+//     status: 200,
+//     userId: user._id,
+//     email: user.email,
+//     name: user.name,
+//     ownerName: user.ownerName,
+//     shopAddress: user.shopAddress,
+//     country: user.country,
+//     userRole: user.userRole,
+//     // password: passwordGenerator,
+//   };
+// };
 
 //login
 export const login = async ({ email, password }) => {
@@ -243,4 +243,126 @@ export const resetPassword = async (userId, token, password) => {
     status: 200,
     message: "Password reset was successful",
   };
+};
+
+export const Accept = async ({ token }) => {
+  console.log("triggered");
+  let decode = verify(token, JWTsecret);
+  let user = await userModel.findOne({ email: decode.email });
+  if (!user) {
+    return {
+      success: false,
+      status: 422,
+      message: "username was not found",
+    };
+  }
+  const passwordGenerator =
+    "@" + Math.floor(Math.random() * process.env.PASSWORD_KEY) + "lpa";
+  const hash = await bcrypt.hash(passwordGenerator, Number(bcryptSalt));
+  console.log(passwordGenerator, "generated password");
+  const data = await userModel.findOneAndUpdate(
+    { email: decode.email },
+    { $set: { password: hash } }
+  );
+  if (data) {
+    console.log("password genreated and stored successfully", data);
+  }
+  sendEmail(
+    user.email,
+    "Set password",
+    {
+      name: user.name,
+      //link: link,
+      password: passwordGenerator,
+    },
+    "./template/setPassword.handlebars"
+  );
+  return {
+    success: true,
+    status: 200,
+    userId: user._id,
+    email: user.email,
+    name: user.name,
+    ownerName: user.ownerName,
+    shopAddress: user.shopAddress,
+    country: user.country,
+    userRole: user.userRole,
+    // password: passwordGenerator,
+  };
+};
+
+export const Reject = async ({ token }) => {
+  let decode = verify(token, JWTsecret);
+  let user = await userModel.findOne({ email: decode.email });
+  await sendEmail(
+    user.email,
+    "Reject Password",
+    {
+      name: user.name,
+      //link: link,
+    },
+    "./template/rejectPassword.handlebars"
+  );
+  user.delete();
+};
+
+//Version 2
+export const signup = async (payload) => {
+  try {
+    let user = await userModel.findOne({ email: payload.email });
+    if (user) {
+      return {
+        success: false,
+        status: 422,
+        message: "username already taken",
+      };
+    }
+
+    user = new userModel({
+      email: payload.email,
+      name: payload.name,
+      ownerName: payload.ownerName,
+      shopAddress: payload.shopAddress,
+      country: payload.country,
+      subscribed: true,
+      userRole: "User",
+      password: "",
+    });
+
+    await user.save();
+
+    let token = jwt.sign({ email: payload.email }, JWTsecret);
+    await sendEmail(
+      "vigneshakshan@gmail.com",
+      "Request mail",
+      {
+        name: user.name,
+        accept: `${process.env.CLIENT_URL}/api/auth/accept?token=${token}`,
+        reject: `${process.env.CLIENT_URL}/api/auth/reject?token=${token}`,
+      },
+      "./template/approvalMail.handlebars"
+    );
+    await sendEmail(
+      user.email,
+      "Acknowledge Mail",
+      {
+        name: user.name,
+      },
+      "./template/acknowledgement.handlebars"
+    );
+    return {
+      success: true,
+      status: 200,
+      userId: user._id,
+      email: user.email,
+      name: user.name,
+      ownerName: user.ownerName,
+      shopAddress: user.shopAddress,
+      country: user.country,
+      userRole: user.userRole,
+      // password: passwordGenerator,
+    };
+  } catch (err) {
+    console.log(err);
+  }
 };

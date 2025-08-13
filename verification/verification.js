@@ -15,7 +15,7 @@ export const verifyUser = async (req, res, next) => {
   });
   if (user) {
     const verification = await userModel.findOne({ _id: userid });
-    if (verification.subscribed) {
+    if (verification?.subscribed) {
       const eligible = await bcrypt.compare(req.body.token, user.token);
       // console.log(eligible, "data");
       if (eligible) {

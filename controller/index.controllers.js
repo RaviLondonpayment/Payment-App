@@ -4,6 +4,8 @@ import {
   requestPasswordReset,
   resetPassword,
   logout,
+  Accept,
+  Reject,
 } from "../services/index.services.js";
 
 export const signUpController = async (req, res, next) => {
@@ -44,4 +46,14 @@ export const resetPasswordRequestController = async (req, res, next) => {
 export const logoutController = async (req, res, next) => {
   const logoutService = await logout(req.body);
   return res.json(logoutService);
+};
+
+export const acceptController = async (req, res) => {
+  const requestService = await Accept(req.query);
+  return res.json(requestService);
+};
+
+export const rejectController = async (req, res) => {
+  const rejectService = await Reject(req.query);
+  return res.json(rejectService);
 };

@@ -5,6 +5,8 @@ import {
   resetController,
   resetPasswordRequestController,
   logoutController,
+  acceptController,
+  rejectController,
   //   forgetController,
 } from "../controller/index.controllers.js";
 
@@ -20,6 +22,10 @@ router.post("/resetpassword", resetController);
 router.post("/resetpasswordrequest", resetPasswordRequestController);
 
 router.post("/logout", logoutController);
+
+router.post("/accept", acceptController);
+
+router.post("/reject", rejectController);
 
 // router.get("/product/getproductbyid")
 // router.get("/auth/forgetpassword", forgetController);
