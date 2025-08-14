@@ -159,18 +159,25 @@ export const requestPasswordReset = async (email) => {
       { new: true }
     )
     .catch((err) => (error = err));
+  try {
+    console.log(user);
+    const deletes = await tokenModel.deleteMany({ userId: user._id });
+    console.log(deletes);
+  } catch (err) {
+    console.log(error);
+  }
 
-  let token = await tokenModel.findOne({ userId: user._id });
-  if (token) await token.deleteOne();
+  // let token = await tokenModel.findOne({ userId: user._id });
+  // if (token) await token.deleteOne();
 
-  let resetToken = crypto.randomBytes(32).toString("hex");
-  const hashtoken = await bcrypt.hash(resetToken, Number(bcryptSalt));
+  // let resetToken = crypto.randomBytes(32).toString("hex");
+  // const hashtoken = await bcrypt.hash(resetToken, Number(bcryptSalt));
 
-  await new tokenModel({
-    userId: user._id,
-    token: hashtoken,
-    createdAt: Date.now(),
-  }).save();
+  // await new tokenModel({
+  //   userId: user._id,
+  //   token: hashtoken,
+  //   createdAt: Date.now(),
+  // }).save();
   // const link = `${process.env.CLIENT_URL}/passwordReset?token=${resetToken}&id=${user._id}`;
 
   let response = await sendEmail(
